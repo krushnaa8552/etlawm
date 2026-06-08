@@ -3,6 +3,11 @@ import path from 'path';
 import pg from 'pg';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+import dns from 'node:dns';
+
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder('ipv4first');
+}
 
 dotenv.config();
 

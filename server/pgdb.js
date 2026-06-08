@@ -1,6 +1,11 @@
 'use strict';
+import dns from 'node:dns';
 import dotenv from 'dotenv';
 import { Pool } from 'pg';
+
+if (dns.setDefaultResultOrder) {
+    dns.setDefaultResultOrder('ipv4first');
+}
 
 dotenv.config();
 // ─── Connection Pool ──────────────────────────────────────────────────────────
