@@ -1,36 +1,86 @@
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { useEffect } from 'react';
+import Lenis from 'lenis';
 import './App.css';
-import Home from './Pages/Home.jsx';
-import Login from './Pages/Login.jsx';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './Components/ProtectedRoute';
+import AdminRoute from './Components/AdminPanel/AdminRoute';
+import Home        from './Pages/Home.jsx';
+import Login       from './Pages/Login2.jsx';
 import Collection from './Pages/Collection.jsx';
-import Cart from './Pages/Cart.jsx';
-import Product from './Pages/Product.jsx';
+import Cart        from './Pages/Cart.jsx';
+import Product     from './Pages/Product3.jsx';
 import Ingredients from './Pages/Ingredients.jsx';
-import DashBoard from './Pages/DashBoard.jsx';
-import Ritual from './Pages/Ritual.jsx';
+import DashBoard   from './Pages/DashBoard.jsx';
+import Ritual      from './Pages/Ritual.jsx';
+import AdminDashBoard from './Pages/AdminDashBoard.jsx';
+import Scrapping from './Scrapping/Scrapping.jsx';
 
 function AppRoutes() {
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.1,
+      smoothWheel: true,
+      smoothTouch: false,
+    });
 
-  return (
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+
+    requestAnimationFrame(raf);
+
+    return () => {
+      lenis.destroy();
+    };
+  }, []);
+  
+    return (
       <Routes>
-        <Route path="/" element={ <Home /> } />
-        <Route path="/login" element={ <Login /> } />
-        <Route path="/collection" element={<Collection />} />
-        <Route path="/cart" element={ <Cart /> } />
-        <Route path="/dashboard" element={ <DashBoard /> } />
-        <Route path="/product" element={ <Product /> } />
-        <Route path="/ritual" element={ <Ritual /> } />
-        <Route path="/ingredients" elements={ <Ingredients /> } />
-      </Routes>
-  )
+        <Route path="/scrap" element={<Scrapping />} />
+        <Route path="/"                         element={<Home />} />
+        <Route path="/login"                    element={<Login />} />
+        {/* Collection routes */}
+        <Route path="/collection"               element={<Collection />} />
+        <Route path="/collection/:category"     element={<Collection />} />
+        {/* Individual product */}
+        <Route path="/product/:slug"            element={<Product />} />
+        <Route path="/cart"                     element={<Cart />} />
+        <Route path="/ritual"                   element={<Ritual />} />
+        <Route path="/ingredients"              element={<Ingredients />} />
+
+        {/* Protected — redirects to /login if not authenticated */}
+        <Route
+            path="/dashboard"
+            element={
+                <ProtectedRoute>
+                    <DashBoard />
+                </ProtectedRoute>
+            }
+        />
+
+        {/* Admin Routes */}
+
+        <Route
+          path="/admin/*"
+          element={
+            <AdminRoute>
+              <AdminDashBoard />
+            </AdminRoute>
+          }
+        />
+    </Routes>
+  );
 }
 
-const App = () => {
-  return(
-    <Router>
+const App = () => (
+  <Router>
+    {/* AuthProvider wraps everything so any child can call useAuth() */}
+    <AuthProvider>
       <AppRoutes />
-    </Router>
-  )
-}
+    </AuthProvider>
+  </Router>
+);
 
-export default App
+export default App;

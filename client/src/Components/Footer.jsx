@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { colours, fonts } from "../theme/theme.js";
 
 const InstagramIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
@@ -63,13 +64,13 @@ export default function Footer() {
   const supportLinks = ["My Account", "Track Order", "FAQs", "Shipping & Returns"];
 
   return (
-    <footer className="bg-[#0d0d0d] text-white font-['Josefin_Sans',sans-serif]">
+    <footer className="bg-[#0d0d0d] text-white" style={{ fontFamily: fonts.secondary }}>
       {/* Top section */}
       <div className="max-w-[1400px] mx-auto px-8 pt-16 pb-12">
         <div className="flex flex-col lg:flex-row lg:justify-between gap-12">
           {/* Brand block */}
           <div className="max-w-xs">
-            <div className="text-2xl font-bold tracking-widest mb-1 font-['Cormorant_Garamond',serif]">
+            <div className="text-2xl font-bold tracking-widest mb-1" style={{ fontFamily: fonts.primary }}>
               ETLAWM.
             </div>
             <div className="text-[10px] tracking-[0.3em] text-gray-400 mb-5 uppercase">
@@ -95,11 +96,14 @@ export default function Footer() {
                 onChange={(e) => setEmail(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSubscribe()}
                 placeholder="your@email.com"
-                className="flex-1 bg-[#1a1a1a] border border-[#2a2a2a] rounded-full px-5 py-3 text-sm text-white placeholder-gray-500 outline-none focus:border-gray-500 transition-colors"
+                className="flex-1 bg-[#1a1a1a] border border-[#2a2a2a] rounded-[4px] px-5 py-3 text-sm text-white placeholder-gray-500 outline-none focus:border-gray-500 transition-colors"
               />
               <button
                 onClick={handleSubscribe}
-                className="flex items-center gap-2 bg-white text-black rounded-full px-6 py-3 text-sm font-semibold tracking-wide hover:bg-gray-100 transition-colors whitespace-nowrap"
+              className="flex items-center gap-2 rounded-sm px-6 py-3 text-sm font-semibold tracking-wide whitespace-nowrap transition-colors"
+                style={{ background: colours.accent, color: colours.background }}
+                onMouseEnter={e => e.currentTarget.style.background = colours.secondary}
+                onMouseLeave={e => e.currentTarget.style.background = colours.accent}
               >
                 {subscribed ? "Done ✓" : (
                   <>Subscribe </>

@@ -1,0 +1,149 @@
+import { useEffect, useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import { getCart } from "../services/cartService";
+import { colours, fonts } from "../theme/theme";
+
+const NavMain = () => {
+  const { user, isAdmin } = useAuth();
+
+  const [cartCount, setCartCount] = useState(0);
+
+  const navLinks = ["Ritual", "Science", "Ingredients", "Collection"];
+
+  const authHref = user
+    ? isAdmin
+      ? "/admin/dashboard"
+      : "/dashboard"
+    : "/login";
+
+  const authLabel = user
+    ? isAdmin
+      ? "Admin Panel"
+      : "Dashboard"
+    : "Join";
+
+  useEffect(() => {
+    async function loadCartCount() {
+      try {
+        const cart = await getCart();
+
+        const totalQuantity = cart.items.reduce(
+          (total, item) => total + Number(item.quantity || 0),
+          0,
+        );
+
+        setCartCount(totalQuantity);
+      } catch (error) {
+        setCartCount(0);
+      }
+    }
+
+    loadCartCount();
+
+    window.addEventListener("cart-updated", loadCartCount);
+
+    return () => {
+      window.removeEventListener("cart-updated", loadCartCount);
+    };
+  }, [user]);
+
+  return (
+    <header
+      className="fixed left-0 top-0 z-50 w-full"
+      style={{
+        backgroundColor: colours.primary,
+        borderBottom: `1px solid ${colours.border}`,
+      }}
+    >
+      <nav className="mx-auto grid h-18 w-full grid-cols-3 items-center px-12">
+        {/* Left: Brand Name */}
+        <a
+          href="/"
+          className="justify-self-start text-3xl tracking-[-0.04em] transition-colors duration-200"
+          style={{
+            fontFamily: fonts.logo,
+            color: colours.secondary,
+          }}
+        >
+          ETLAWM
+        </a>
+
+        {/* Center: Nav Links */}
+        <ul className="flex justify-center gap-10 text-md uppercase tracking-[-0.03em]">
+          {navLinks.map((link) => (
+            <li key={link}>
+              <a
+                href={`/${link.toLowerCase()}`}
+                className="relative inline-block transition-colors duration-200 after:absolute after:left-0 after:-bottom-1 after:h-px after:w-0 after:bg-current after:transition-all after:duration-300 hover:after:w-full"
+                style={{
+                  fontFamily: fonts.primary,
+                  color: colours.text,
+                }}
+              >
+                {link}
+              </a>
+            </li>
+          ))}
+        </ul>
+
+        {/* Right: Cart + Join / Dashboard / Admin Panel */}
+        <div className="flex items-center justify-end gap-6">
+          <a
+            href="/cart"
+            aria-label="Cart"
+            className="relative transition-colors duration-200"
+            style={{
+              color: colours.text,
+            }}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 1000 1000"
+              className="h-6 w-6 fill-current"
+            >
+              <path d="M126.2 134c-10.7 2.2-20 10.5-24.2 21.7-5.9 15.5 2.2 34.4 17.8 41.6 4.5 2.1 6.1 2.2 45.9 2.5l41.1.3.6 2.2c.3 1.3 21.3 91.2 46.6 199.8 25.3 108.5 47.1 201 48.5 205.4 3.1 10.2 9.1 22.5 16.2 33.4 6.9 10.7 24.9 28.8 35.7 36.1 10.4 6.9 25.9 14.3 37.1 17.5 19.3 5.6 16.4 5.5 166 5.5 83.2-.1 141-.4 145.5-1 55-7.1 98.9-46.6 112.9-101.5.6-2.2 10.7-60.7 22.6-129.9 22.9-134.2 23.1-135.9 20-149.6-4.3-18.3-18.3-36-34.8-44-15.6-7.5 6.4-7-277.4-7-242.1 0-255.2-.1-255.7-1.8-.3-.9-6.1-25.9-13-55.4-8.2-35.2-13.3-55.3-15-58.5-3.3-6.4-8.8-11.6-16.1-15l-6-2.8-55-.2c-30.2 0-56.9.3-59.3.7m667.3 201.2c-.3 1.3-9.5 55.2-20.5 119.8s-20.7 120.9-21.6 125c-4.2 19.9-17.6 37.3-35.7 46.3-14.5 7.1-5.1 6.7-157.3 6.7-133.7 0-137.1-.1-145.3-2-19.1-4.6-34.8-17.5-43.7-35.7-3-6.2-7.9-25.8-33-133.5C320.2 392.4 307 335 307 334.3c0-1.1 44.5-1.3 243.5-1.3H794zM358 733.6c-26.6 4.8-46.7 21.7-54.7 45.8-2.3 7-2.7 9.7-2.7 20.6s.4 13.6 2.7 20.6c5.4 16.2 17.1 30 32.4 38.1 20.1 10.7 45 10.2 64.4-1.4 22.3-13.2 34-35.2 32.6-61.2-.6-11.6-2.6-18.8-8-28.4-11.5-20.6-31.8-33.2-55.1-34.2-5-.2-10.2-.2-11.6.1m364.8.4c-25 4.5-44.3 21.2-52.9 45.7-3 8.4-3.7 24.7-1.5 34.7 6.8 30.5 33.2 51.7 64.6 51.8 12.1.1 21.2-2.1 31.3-7.5 15.3-8.1 27-21.9 32.4-38.1 2.3-7 2.7-9.7 2.7-20.6s-.4-13.6-2.7-20.6c-5.6-16.9-19.4-32.6-34.7-39.6-12.1-5.5-28.1-7.9-39.2-5.8" />
+            </svg>
+
+            {cartCount > 0 && (
+              <span
+                className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-[10px] font-semibold leading-none"
+                style={{
+                  backgroundColor: colours.accent,
+                  color: colours.background,
+                  fontFamily: fonts.secondary,
+                }}
+              >
+                {cartCount > 99 ? "99+" : cartCount}
+              </span>
+            )}
+          </a>
+
+          <a
+            href={authHref}
+            className="rounded-sm border px-5 py-2 text-sm uppercase tracking-[-0.03em] transition-all duration-200"
+            style={{
+              fontFamily: fonts.primary,
+              color: colours.background,
+              backgroundColor: colours.accent,
+              borderColor: colours.accent,
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = colours.hover;
+              e.currentTarget.style.borderColor = colours.hover;
+              e.currentTarget.style.color = colours.secondary;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = colours.accent;
+              e.currentTarget.style.borderColor = colours.accent;
+              e.currentTarget.style.color = colours.background;
+            }}
+          >
+            {authLabel}
+          </a>
+        </div>
+      </nav>
+    </header>
+  );
+};
+
+export default NavMain;
