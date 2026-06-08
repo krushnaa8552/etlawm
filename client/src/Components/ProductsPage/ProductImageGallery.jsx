@@ -19,13 +19,13 @@ export default function ProductImageGallery({ name, badge, images, fallbackImage
         return (
           <figure
             key={image.id || `${imageUrl}-${index}`}
-            className="relative m-0 min-h-[70vh] overflow-hidden rounded-lg"
+            className="relative m-0 overflow-hidden rounded-lg"
             style={{ backgroundColor: colours.primary }}
           >
             <img
               src={imageUrl}
               alt={`${name} view ${index + 1}`}
-              className="h-full min-h-[70vh] w-full object-cover"
+              className="h-full w-full object-cover"
               onError={(event) => {
                 event.currentTarget.src = "/products/placeholder.png";
               }}

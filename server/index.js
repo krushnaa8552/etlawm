@@ -871,16 +871,42 @@ app.post(
   "/api/admin/upload",
   requireAdmin,
   upload.single("image"),
-  (req, res) => {
+  async (req, res) => {
     if (!req.file) {
-      return res
-        .status(400)
-        .json({ success: false, message: "No file uploaded." });
+      return res.status(400).json({ success: false, message: "No file uploaded." });
     }
-    const imageUrl = `http://localhost:5000/uploads/${req.file.filename}`;
-    res.json({ success: true, url: imageUrl });
+
+    try {
+      const fileName = req.file.filename;
+      const fileBuffer = fs.readFileSync(req.file.path);
+
+      // Upload to Supabase Storage via REST API (No extra packages needed!)
+      await axios.post(
+        `${process.env.SUPABASE_URL}/storage/v1/object/product-images/${fileName}`,
+        fileBuffer,
+        {
+          headers: {
+            'Authorization': `Bearer ${process.env.SUPABASE_KEY}`,
+            'Content-Type': req.file.mimetype,
+          }
+        }
+      );
+
+      // Generate the permanent public link
+      const publicUrl = `${process.env.SUPABASE_URL}/storage/v1/object/public/product-images/${fileName}`;
+
+      // Clean up the local temporary file from Render disk
+      fs.unlinkSync(req.file.path);
+
+      // Return the public URL to the CMS form
+      res.json({ success: true, url: publicUrl });
+    } catch (err) {
+      console.error("[upload to supabase error]", err.response?.data ?? err.message);
+      res.status(500).json({ success: false, message: "Failed to upload image to storage." });
+    }
   },
 );
+
 
 // Add an image to a product
 // Body: { image_url, is_primary, sort_order }

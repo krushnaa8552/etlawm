@@ -2,7 +2,7 @@ export const colours = {
   primary: '#F7F3EC',
   secondary: '#171715',
   background: '#f8f8f8',
-  subBackground: '#fbfbfb' ,
+  subBackground: '#fbfbfb',
   text: '#080808',
   accent: '#A77C6B',
   surface: '#E8E2D8',
