@@ -4,7 +4,7 @@ import { useGoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../context/AuthContext';
 import { colours, fonts } from '../theme/theme.js';
 
-const API = 'http://localhost:5000/api';
+const API = import.meta.env.VITE_SERVER_API;
 
 /* ── Icons ── */
 const IconPhone = () => (
@@ -135,7 +135,7 @@ const Login = () => {
         if (raw.length < 7) return err('Please enter a valid phone number.');
         setLoading(true);
         try {
-            const res  = await fetch(`${API}/auth/send-otp`, {
+            const res  = await fetch(`${API}/api/auth/send-otp`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ phone_number: raw, country_code: cc }),
@@ -188,7 +188,7 @@ const Login = () => {
         setLoading(true);
         try {
             const raw = phone.replace(/\D/g, '');
-            const res  = await fetch(`${API}/auth/verify-otp`, {
+            const res  = await fetch(`${API}/api/auth/verify-otp`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ phone_number: raw, country_code: cc, otp }),
@@ -225,7 +225,7 @@ const Login = () => {
         if (!name.first.trim()) return err('First name is required.');
         setLoading(true);
         try {
-            const res  = await fetch(`${API}/auth/onboard`, {
+            const res  = await fetch(`${API}/api/auth/onboard`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

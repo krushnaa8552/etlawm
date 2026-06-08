@@ -6,7 +6,7 @@
  */
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
-const API = 'http://localhost:5000/api';
+const API = import.meta.env.VITE_SERVER_API;
 
 const AuthContext = createContext(null);
 
@@ -27,7 +27,7 @@ export function AuthProvider({ children }) {
                 setUser(JSON.parse(storedUser));
 
                 // Fetch fresh profile details from the server to keep session in sync
-                fetch(`${API}/auth/me`, {
+                fetch(`${API}/api/auth/me`, {
                     headers: {
                         Authorization: `Bearer ${storedToken}`
                     }
@@ -90,7 +90,7 @@ export function AuthProvider({ children }) {
         const currentToken = localStorage.getItem('token');
         // Fire-and-forget server-side session deletion
         if (currentToken) {
-            fetch(`${API}/auth/logout`, {
+            fetch(`${API}api/auth/logout`, {
                 method: 'POST',
                 headers: { Authorization: `Bearer ${currentToken}` },
             }).catch(() => {/* server errors on logout are non-critical */});

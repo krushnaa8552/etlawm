@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = import.meta.env.VITE_SERVER_API;
 
 function getHeaders() {
     const token = localStorage.getItem('token');
@@ -13,7 +13,7 @@ export async function uploadImage(file) {
     const formData = new FormData();
     formData.append('image', file);
 
-    const response = await fetch(`${API_BASE}/admin/upload`, {
+    const response = await fetch(`${API_BASE}/api/admin/upload`, {
         method: 'POST',
         headers: token ? { Authorization: `Bearer ${token}` } : {},
         body: formData,
@@ -27,7 +27,7 @@ export async function uploadImage(file) {
 }
 
 export async function createProduct(data) {
-    const response = await fetch(`${API_BASE}/products`, {
+    const response = await fetch(`${API_BASE}/api/products`, {
         method: 'POST',
         headers: getHeaders(),
         body: JSON.stringify(data),
@@ -42,7 +42,7 @@ export async function createProduct(data) {
 }
 
 export async function updateProduct(id, data) {
-    const response = await fetch(`${API_BASE}/products/${id}`, {
+    const response = await fetch(`${API_BASE}/api/products/${id}`, {
         method: 'PATCH',
         headers: getHeaders(),
         body: JSON.stringify(data),
@@ -57,7 +57,7 @@ export async function updateProduct(id, data) {
 }
 
 export async function deleteProduct(id) {
-    const response = await fetch(`${API_BASE}/products/${id}`, {
+    const response = await fetch(`${API_BASE}/api/products/${id}`, {
         method: 'DELETE',
         headers: getHeaders(),
     });
@@ -71,7 +71,7 @@ export async function deleteProduct(id) {
 
 // Helper to associate primary image URL to product (called after product creation)
 export async function addProductImage(productId, imageUrl, isPrimary = true, sortOrder = 0) {
-    const response = await fetch(`${API_BASE}/products/${productId}/images`, {
+    const response = await fetch(`${API_BASE}/api/products/${productId}/images`, {
         method: 'POST',
         headers: getHeaders(),
         body: JSON.stringify({ image_url: imageUrl, is_primary: isPrimary, sort_order: sortOrder }),
@@ -85,7 +85,7 @@ export async function addProductImage(productId, imageUrl, isPrimary = true, sor
 }
 
 export async function getAdminProfile() {
-    const response = await fetch(`${API_BASE}/admin/profile`, {
+    const response = await fetch(`${API_BASE}/api/admin/profile`, {
         method: 'GET',
         headers: getHeaders(),
     });
@@ -97,7 +97,7 @@ export async function getAdminProfile() {
 }
 
 export async function updateAdminProfile(data) {
-    const response = await fetch(`${API_BASE}/admin/profile`, {
+    const response = await fetch(`${API_BASE}/api/admin/profile`, {
         method: 'PATCH',
         headers: getHeaders(),
         body: JSON.stringify(data),
@@ -110,7 +110,7 @@ export async function updateAdminProfile(data) {
 }
 
 export async function getAdminSettings() {
-    const response = await fetch(`${API_BASE}/admin/settings`, {
+    const response = await fetch(`${API_BASE}/api/admin/settings`, {
         method: 'GET',
         headers: getHeaders(),
     });
@@ -122,7 +122,7 @@ export async function getAdminSettings() {
 }
 
 export async function updateAdminSettings(data) {
-    const response = await fetch(`${API_BASE}/admin/settings`, {
+    const response = await fetch(`${API_BASE}/api/admin/settings`, {
         method: 'PATCH',
         headers: getHeaders(),
         body: JSON.stringify(data),
@@ -135,7 +135,7 @@ export async function updateAdminSettings(data) {
 }
 
 export async function getAdminPhones() {
-    const response = await fetch(`${API_BASE}/admin/phones`, {
+    const response = await fetch(`${API_BASE}/api/admin/phones`, {
         method: 'GET',
         headers: getHeaders(),
     });
@@ -147,7 +147,7 @@ export async function getAdminPhones() {
 }
 
 export async function addAdminPhone(phoneNumber) {
-    const response = await fetch(`${API_BASE}/admin/register-phone`, {
+    const response = await fetch(`${API_BASE}/api/admin/register-phone`, {
         method: 'POST',
         headers: getHeaders(),
         body: JSON.stringify({ phone_number: phoneNumber }),
@@ -160,7 +160,7 @@ export async function addAdminPhone(phoneNumber) {
 }
 
 export async function deleteAdminPhone(phoneNumber) {
-    const response = await fetch(`${API_BASE}/admin/phones/${phoneNumber}`, {
+    const response = await fetch(`${API_BASE}/api/admin/phones/${phoneNumber}`, {
         method: 'DELETE',
         headers: getHeaders(),
     });

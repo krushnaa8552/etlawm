@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { colours, fonts } from '../theme/theme.js';
 
+const API = import.meta.env.VITE_SERVER_API;
+
 const DashBoard = () => {
 
-    const API = 'http://localhost:5000'
     const { user, logout } = useAuth();
     const navigate = useNavigate();
     const [profileDismissed, setProfileDismissed] = useState(false);
