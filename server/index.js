@@ -887,6 +887,7 @@ app.post(
         {
           headers: {
             'Authorization': `Bearer ${process.env.SUPABASE_KEY}`,
+            apikey: process.env.SUPABASE_KEY,
             'Content-Type': req.file.mimetype,
           }
         }
