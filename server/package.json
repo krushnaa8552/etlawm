@@ -1,4 +1,11 @@
 {
+  "name": "server",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "migrate": "node run-migrations.js"
+  },
   "dependencies": {
     "@google/genai": "^2.4.0",
     "@google/generative-ai": "^0.24.1",
@@ -12,6 +19,5 @@
     "mongoose": "^9.6.2",
     "multer": "^2.1.1",
     "pg": "^8.20.0"
-  },
-  "type": "module"
+  }
 }

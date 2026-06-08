@@ -4,13 +4,20 @@ import { Pool } from 'pg';
 
 dotenv.config();
 // ─── Connection Pool ──────────────────────────────────────────────────────────
-const pool = new Pool({
-    host: process.env.PG_HOST,
-    port: parseInt(process.env.PG_PORT, 10),
-    database: process.env.PG_DATABASE,
-    user: process.env.PG_USER,
-    password: process.env.PG_PASSWORD,
-});
+const pool = process.env.DATABASE_URL
+    ? new Pool({
+        connectionString: process.env.DATABASE_URL,
+        ssl: {
+            rejectUnauthorized: false
+        }
+      })
+    : new Pool({
+        host: process.env.PG_HOST,
+        port: parseInt(process.env.PG_PORT, 10),
+        database: process.env.PG_DATABASE,
+        user: process.env.PG_USER,
+        password: process.env.PG_PASSWORD,
+      });
 
 pool.on('error', (err) => {
     console.error('[pgdb] Unexpected pool error:', err.message);
