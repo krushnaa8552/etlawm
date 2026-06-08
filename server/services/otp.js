@@ -11,9 +11,9 @@ import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 import * as wa from '../scrap.js';
 
-const OTP_LENGTH       = 6;
-const BCRYPT_ROUNDS    = 10;
-const WA_OTP_TEMPLATE  = process.env.WA_OTP_TEMPLATE || 'otp_auth'; // Meta-approved template name
+const OTP_LENGTH = 6;
+const BCRYPT_ROUNDS = 10;
+const WA_OTP_TEMPLATE = process.env.WA_OTP_TEMPLATE || 'otp_auth'; // Meta-approved template name
 
 /**
  * Generate a cryptographically random numeric OTP.
@@ -55,15 +55,15 @@ async function verifyOtp(otp, hash) {
  * @param {string} otp     Plaintext OTP to deliver
  */
 async function sendOtp(phone, otp) {
-    const token = process.env.YOUR_ACCESS_TOKEN;
+    // ── ALWAYS print OTP to console during building/testing ──
+    console.log(`\n[OTP Service] ── DEBUG/DEV ──`);
+    console.log(`[OTP Service] Phone : ${phone}`);
+    console.log(`[OTP Service] OTP   : ${otp}`);
+    console.log(`[OTP Service] ───────────────────\n`);
+
+    const token = process.env.WHATSAPP_TOKEN || process.env.YOUR_ACCESS_TOKEN;
 
     if (!token) {
-        // ── Development fallback ──────────────────────────────────────────────
-        // No WhatsApp credentials configured — print OTP to server console.
-        console.log(`\n[OTP Service] ── DEV MODE ──`);
-        console.log(`[OTP Service] Phone : ${phone}`);
-        console.log(`[OTP Service] OTP   : ${otp}`);
-        console.log(`[OTP Service] ─────────────────\n`);
         return;
     }
 
