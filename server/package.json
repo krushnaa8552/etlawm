@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "start": "node index.js",
-    "start2": "node server.js",
+    "start": "node server.js",
     "migrate": "node run-migrations.js"
   },
   "dependencies": {
