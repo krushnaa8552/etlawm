@@ -125,7 +125,7 @@ export default function Product() {
         }
 
         try {
-          const response = await fetch(`${API}/api/products/${found.id}/images`);
+          const response = await fetch(`${API}/api/product/${found.id}/images`);
           if (response.ok) {
             const data = await response.json();
             const sortedImages = (data.images ?? []).sort(

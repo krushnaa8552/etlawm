@@ -21,7 +21,7 @@ const DashBoard = () => {
     const handleWhatsappSave = async () => {
         try {
             const token = localStorage.getItem('token');
-            const res = await fetch(`${API}/api/user/whatsapp-optin`, {
+            const res = await fetch(`${API}/api/whatsapp/optin`, {
                 method:  'PATCH',
                 headers: {
                     'Content-Type':  'application/json',

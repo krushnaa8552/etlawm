@@ -79,4 +79,6 @@ async function sendOtp(phone, otp) {
     }
 }
 
-export { generateOtp, hashOtp, verifyOtp, sendOtp };
+const otpService = { generateOtp, hashOtp, verifyOtp, sendOtp };
+
+export default otpService;

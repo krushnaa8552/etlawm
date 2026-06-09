@@ -33,7 +33,7 @@ export function AuthProvider({ children }) {
                     }
                 })
                 .then(res => {
-                    if (res.status === 401 || res.status === 403) {
+                    if (res.status === 401 || res.status === 403 || res.status === 404) {
                         // Stale/invalid token - clear session
                         setToken(null);
                         setUser(null);
@@ -52,14 +52,19 @@ export function AuthProvider({ children }) {
                 })
                 .catch(err => {
                     console.error('[AuthContext] Profile sync failed:', err);
+                })
+                .finally(() => {
+                    setLoading(false);
                 });
             } catch {
                 // Corrupted storage — clear and start fresh
                 localStorage.removeItem('token');
                 localStorage.removeItem('etlawm_user');
+                setLoading(false);
             }
+        } else {
+            setLoading(false);
         }
-        setLoading(false);
     }, []);
 
     /**
@@ -90,7 +95,7 @@ export function AuthProvider({ children }) {
         const currentToken = localStorage.getItem('token');
         // Fire-and-forget server-side session deletion
         if (currentToken) {
-            fetch(`${API}api/auth/logout`, {
+            fetch(`${API}/api/auth/logout`, {
                 method: 'POST',
                 headers: { Authorization: `Bearer ${currentToken}` },
             }).catch(() => {/* server errors on logout are non-critical */});

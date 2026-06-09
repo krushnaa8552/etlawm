@@ -135,7 +135,7 @@ export default function AdminProductForm() {
             concerns: product.concerns || [],
           });
 
-          const imgRes = await fetch(`${API}/api/products/${id}/images`);
+          const imgRes = await fetch(`${API}/api/product/${id}/images`);
           if (imgRes.ok) {
             const imgData = await imgRes.json();
             setUploadedImages(imgData.images ?? []);
@@ -246,7 +246,7 @@ export default function AdminProductForm() {
     if (target.id) {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`${API}/api/products/${id}/images/${target.id}`, {
+        const response = await fetch(`${API}/api/admin/products/${id}/images/${target.id}`, {
           method: 'DELETE',
           headers: {
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -294,7 +294,7 @@ export default function AdminProductForm() {
     try {
       let finalCategoryId = form.categoryId;
       if (form.categoryId === 'NEW_CATEGORY' && newCategoryName.trim()) {
-        const response = await fetch(`${API}/api/categories`, {
+        const response = await fetch(`${API}/api/admin/categories`, {
           method: 'POST',
           headers: getHeaders(),
           body: JSON.stringify({ name: newCategoryName.trim() }),
@@ -356,7 +356,7 @@ export default function AdminProductForm() {
             await addProductImage(id, img.image_url, i === 0, i);
           } else if (i === 0 || img.is_primary) {
             const token = localStorage.getItem('token');
-            await fetch(`${API}/api/products/${id}/images/${img.id}/primary`, {
+            await fetch(`${API}/api/admin/products/${id}/images/${img.id}/primary`, {
               method: 'PATCH',
               headers: {
                 ...(token ? { Authorization: `Bearer ${token}` } : {}),

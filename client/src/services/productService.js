@@ -22,13 +22,21 @@ function slugify(name = '') {
  *   Vite dev-server public folder (which mirrors the same origin).
  * - Falls back to a neutral placeholder so the UI never shows a broken image.
  */
-function resolveImage(url) {
-    if (!url) return '/products/placeholder.png';
-    if (url.startsWith('http://') || url.startsWith('https://')) return url;
-    // Relative path — prepend nothing; the browser resolves it from origin
-    return url.startsWith('/') ? url : `/${url}`;
-}
-
+ function resolveImage(url) {
+   if (!url) {
+     return "/products/placeholder.png";
+   }
+ 
+   if (
+     url.startsWith("http://") ||
+     url.startsWith("https://")
+   ) {
+     return url;
+   }
+ 
+   return `${API}${url.startsWith("/") ? url : `/${url}`}`;
+ }
+ 
 /**
  * Map a raw DB product row → the shape the UI components expect.
  *
@@ -119,23 +127,39 @@ function normalizeProduct(raw) {
  * @param {boolean} includeInactive Whether to request inactive products (requires admin permissions).
  * @returns {Promise<Array>}  Array of normalised product objects.
  */
-export async function getProducts(includeInactive = false) {
-    const token = localStorage.getItem('token');
-    const headers = {};
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    const url = `${API}/api/products${includeInactive ? '?include_inactive=true' : ''}`;
-    const response = await fetch(url, { headers });
-    if (!response.ok) {
-        const err = await response.json().catch(() => ({}));
-        throw new Error(err.message ?? `Failed to fetch products (${response.status})`);
-    }
-    const data = await response.json();
-    const raw  = Array.isArray(data.products) ? data.products : [];
-    return raw.map(normalizeProduct);
-}
+ export async function getProducts(includeInactive = false) {
+   const token = localStorage.getItem("token");
+   const headers = {};
+ 
+   if (token) {
+     headers.Authorization = `Bearer ${token}`;
+   }
+ 
+   const query = includeInactive
+     ? "?include_inactive=true"
+     : "";
+ 
+   const response = await fetch(
+     `${API}/api/product${query}`,
+     { headers },
+   );
+ 
+   if (!response.ok) {
+     const err = await response.json().catch(() => ({}));
+ 
+     throw new Error(
+       err.message ??
+         `Failed to fetch products (${response.status})`,
+     );
+   }
+ 
+   const data = await response.json();
+   const raw = Array.isArray(data.products)
+     ? data.products
+     : [];
+ 
+   return raw.map(normalizeProduct);
+ }
 
 /**
  * Fetch a single product by its slug.
@@ -159,16 +183,24 @@ export async function getProductBySlug(slug) {
  * @param {number|string} id
  * @returns {Promise<object|null>} Normalised product, or null if not found.
  */
-export async function getProductById(id) {
-    const url = `${API}/api/products/${id}`;
-    const response = await fetch(url);
-    if (!response.ok) {
-        const err = await response.json().catch(() => ({}));
-        throw new Error(err.message ?? `Failed to fetch product (${response.status})`);
-    }
-    const data = await response.json();
-    return normalizeProduct(data.product);
-}
+ export async function getProductById(id) {
+   const response = await fetch(
+     `${API}/api/product/${id}`,
+   );
+ 
+   if (!response.ok) {
+     const err = await response.json().catch(() => ({}));
+ 
+     throw new Error(
+       err.message ??
+         `Failed to fetch product (${response.status})`,
+     );
+   }
+ 
+   const data = await response.json();
+ 
+   return normalizeProduct(data.product);
+ }
 
 
 /**
@@ -177,24 +209,31 @@ export async function getProductById(id) {
  * @param {number|string} id
  * @returns {Promise<object>} Backend response.
  */
-export async function deleteProduct(id) {
-    const token = localStorage.getItem('token');
-
-    const headers = {};
-
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    const response = await fetch(`${API}/api/products/${id}`, {
-        method: 'DELETE',
-        headers,
-    });
-
-    if (!response.ok) {
-        const err = await response.json().catch(() => ({}));
-        throw new Error(err.message ?? `Failed to delete product (${response.status})`);
-    }
-
-    return response.json();
-}
+ export async function deleteProduct(id) {
+   const token = localStorage.getItem("token");
+ 
+   if (!token) {
+     throw new Error("Admin authentication is required.");
+   }
+ 
+   const response = await fetch(
+     `${API}/api/admin/products/${id}`,
+     {
+       method: "DELETE",
+       headers: {
+         Authorization: `Bearer ${token}`,
+       },
+     },
+   );
+ 
+   if (!response.ok) {
+     const err = await response.json().catch(() => ({}));
+ 
+     throw new Error(
+       err.message ??
+         `Failed to delete product (${response.status})`,
+     );
+   }
+ 
+   return response.json();
+ }

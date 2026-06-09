@@ -762,7 +762,52 @@ const cartItems = {
         ),
 
     clearCart: (cart_id) =>
-        query(`DELETE FROM cart_items WHERE cart_id = $1`, [cart_id]),
+      query(`DELETE FROM cart_items WHERE cart_id = $1`, [cart_id]
+    ),
+
+    applyCoupon: ({ cart_id, coupon_id }) =>
+      query(
+        `
+        UPDATE carts
+        SET
+          coupon_id = $2,
+          updated_at = NOW()
+        WHERE id = $1
+        RETURNING *
+        `,
+        [cart_id, coupon_id],
+      ),
+    
+    removeCoupon: (cart_id) =>
+      query(
+        `
+        UPDATE carts
+        SET
+          coupon_id = NULL,
+          updated_at = NOW()
+        WHERE id = $1
+        RETURNING *
+        `,
+        [cart_id],
+      ),
+};
+
+//----Coupons--------------------------------------------------------------------
+
+export const coupons = {
+  findValidByCode: (code) =>
+    query(
+      `
+      SELECT *
+      FROM coupons
+      WHERE UPPER(code) = UPPER($1)
+        AND is_active = TRUE
+        AND (starts_at IS NULL OR starts_at <= NOW())
+        AND (expires_at IS NULL OR expires_at > NOW())
+      LIMIT 1
+      `,
+      [code],
+    ),
 };
 
 // ─── Orders ───────────────────────────────────────────────────────────────────
@@ -930,7 +975,7 @@ const adminSettings = {
 };
 
 // ─── Exports ──────────────────────────────────────────────────────────────────
-export {
+const db = {
     pool,
     query,
     connectPG,
@@ -949,3 +994,5 @@ export {
     adminPhones,
     adminSettings,
 };
+
+export default db;

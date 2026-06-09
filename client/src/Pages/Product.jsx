@@ -268,7 +268,7 @@ export default function Product() {
         // Fetch all product images
         let productImages = [];
         try {
-          const imgRes = await fetch(`${API}/api/products/${found.id}/images`);
+          const imgRes = await fetch(`${API}/api/product/${found.id}/images`);
           if (imgRes.ok) {
             const imgData = await imgRes.json();
             productImages = imgData.images ?? [];

@@ -15,8 +15,12 @@ import DashBoard   from './Pages/DashBoard.jsx';
 import Ritual      from './Pages/Ritual.jsx';
 import AdminDashBoard from './Pages/AdminDashBoard.jsx';
 import Scrapping from './Scrapping/Scrapping.jsx';
+import { useAuth } from './context/AuthContext';
+import Loader from './Components/Loader';
 
 function AppRoutes() {
+  const { loading } = useAuth();
+
   useEffect(() => {
     const lenis = new Lenis({
       duration: 1.1,
@@ -35,6 +39,14 @@ function AppRoutes() {
       lenis.destroy();
     };
   }, []);
+
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: '#FCFBF9' }}>
+        <Loader />
+      </div>
+    );
+  }
   
     return (
       <Routes>

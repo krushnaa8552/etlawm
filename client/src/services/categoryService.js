@@ -15,8 +15,14 @@ function normalizeCategory(raw) {
     id: raw.id,
     name: raw.name ?? "",
     slug: raw.slug ?? slugify(raw.name),
-    subtitle: raw.subtitle ?? raw.description ?? `Products in ${raw.name}`,
-    description: raw.description ?? raw.subtitle ?? `Products in ${raw.name}`,
+    subtitle:
+      raw.subtitle ??
+      raw.description ??
+      `Products in ${raw.name}`,
+    description:
+      raw.description ??
+      raw.subtitle ??
+      `Products in ${raw.name}`,
     image: raw.image_url ?? "",
     imageUrl: raw.image_url ?? "",
     isActive: raw.is_active ?? true,
@@ -24,37 +30,8 @@ function normalizeCategory(raw) {
   };
 }
 
-export async function uploadCategoryImage(file) {
-  const token = localStorage.getItem("token");
-
-  const formData = new FormData();
-  formData.append("image", file);
-
-  const headers = {};
-
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
-  }
-
-  const response = await fetch(`${API}/api/admin/upload`, {
-    method: "POST",
-    headers,
-    body: formData,
-  });
-
-  if (!response.ok) {
-    const err = await response.json().catch(() => ({}));
-    throw new Error(err.message ?? `Failed to upload image (${response.status})`);
-  }
-
-  const data = await response.json();
-
-  return data.url;
-}
-
 function getAuthHeaders(json = false) {
   const token = localStorage.getItem("token");
-
   const headers = {};
 
   if (json) {
@@ -62,38 +39,87 @@ function getAuthHeaders(json = false) {
   }
 
   if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
+    headers.Authorization = `Bearer ${token}`;
   }
 
   return headers;
 }
 
-export async function getCategories() {
-  const response = await fetch(`${API}/api/categories`, {
-    headers: getAuthHeaders(),
-  });
+export async function uploadCategoryImage(file) {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    throw new Error("Admin authentication is required.");
+  }
+
+  const formData = new FormData();
+  formData.append("image", file);
+
+  const response = await fetch(
+    `${API}/api/admin/upload`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    },
+  );
 
   if (!response.ok) {
     const err = await response.json().catch(() => ({}));
-    throw new Error(err.message ?? `Failed to fetch categories (${response.status})`);
+
+    throw new Error(
+      err.message ??
+        `Failed to upload image (${response.status})`,
+    );
   }
 
   const data = await response.json();
-  const raw = Array.isArray(data.categories) ? data.categories : [];
+
+  return data.url;
+}
+
+export async function getCategories() {
+  const response = await fetch(
+    `${API}/api/categories`,
+  );
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+
+    throw new Error(
+      err.message ??
+        `Failed to fetch categories (${response.status})`,
+    );
+  }
+
+  const data = await response.json();
+
+  const raw = Array.isArray(data.categories)
+    ? data.categories
+    : [];
 
   return raw.map(normalizeCategory);
 }
 
 export async function createCategory(fields) {
-  const response = await fetch(`${API}/api/categories`, {
-    method: "POST",
-    headers: getAuthHeaders(true),
-    body: JSON.stringify(fields),
-  });
+  const response = await fetch(
+    `${API}/api/admin/categories`,
+    {
+      method: "POST",
+      headers: getAuthHeaders(true),
+      body: JSON.stringify(fields),
+    },
+  );
 
   if (!response.ok) {
     const err = await response.json().catch(() => ({}));
-    throw new Error(err.message ?? `Failed to create category (${response.status})`);
+
+    throw new Error(
+      err.message ??
+        `Failed to create category (${response.status})`,
+    );
   }
 
   const data = await response.json();
@@ -102,15 +128,22 @@ export async function createCategory(fields) {
 }
 
 export async function updateCategory(id, fields) {
-  const response = await fetch(`${API}/api/categories/${id}`, {
-    method: "PATCH",
-    headers: getAuthHeaders(true),
-    body: JSON.stringify(fields),
-  });
+  const response = await fetch(
+    `${API}/api/admin/categories/${id}`,
+    {
+      method: "PATCH",
+      headers: getAuthHeaders(true),
+      body: JSON.stringify(fields),
+    },
+  );
 
   if (!response.ok) {
     const err = await response.json().catch(() => ({}));
-    throw new Error(err.message ?? `Failed to update category (${response.status})`);
+
+    throw new Error(
+      err.message ??
+        `Failed to update category (${response.status})`,
+    );
   }
 
   const data = await response.json();
@@ -119,14 +152,21 @@ export async function updateCategory(id, fields) {
 }
 
 export async function deleteCategory(id) {
-  const response = await fetch(`${API}/api/categories/${id}`, {
-    method: "DELETE",
-    headers: getAuthHeaders(),
-  });
+  const response = await fetch(
+    `${API}/api/admin/categories/${id}`,
+    {
+      method: "DELETE",
+      headers: getAuthHeaders(),
+    },
+  );
 
   if (!response.ok) {
     const err = await response.json().catch(() => ({}));
-    throw new Error(err.message ?? `Failed to delete category (${response.status})`);
+
+    throw new Error(
+      err.message ??
+        `Failed to delete category (${response.status})`,
+    );
   }
 
   return response.json();
