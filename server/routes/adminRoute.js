@@ -2,6 +2,15 @@ import express from 'express';
 import { upload, uploadImage, addProduct, updateProduct, deleteProduct, addProductImage, setProductImagePrimary, deleteProductImage } from '../controllers/productController.js';
 import { addCategory, updateCategory, deleteCategory } from '../controllers/categoryController.js';
 import { getAdminProfile, updateAdminProfile, getAdminSettings, updateAdminSettings, makeAdmin, getAdmins, removeAdmin } from '../controllers/adminProfileController.js';
+import {
+  createCmsReview,
+  getAdminCmsReviews,
+  getPublicCmsReviews,
+  getCmsReviewsByProduct,
+  updateCmsReview,
+  deleteCmsReview,
+  getCmsReviewById
+} from '../controllers/reviewController.js';
 import { requireAdmin } from '../middleware/auth.js';
 
 const adminRouter = express.Router();
@@ -31,5 +40,12 @@ adminRouter.post("/upload", upload.single("image"), uploadImage);
 adminRouter.post("/products/:id/images", addProductImage);
 adminRouter.patch("/products/:product_id/images/:id/primary", setProductImagePrimary);
 adminRouter.delete("/products/:product_id/images/:id", deleteProductImage);
+
+adminRouter.get("/reviews", getAdminCmsReviews);
+adminRouter.post("/reviews", createCmsReview);
+adminRouter.get("/reviews/product/:slug", getCmsReviewsByProduct);
+adminRouter.get("/reviews/:id", getCmsReviewById);
+adminRouter.patch("/reviews/:id", updateCmsReview);
+adminRouter.delete("/reviews/:id", deleteCmsReview);
 
 export default adminRouter;

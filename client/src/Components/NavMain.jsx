@@ -35,6 +35,7 @@ const NavMain = () => {
         setCartCount(totalQuantity);
       } catch (error) {
         setCartCount(0);
+        console.log(error);
       }
     }
 

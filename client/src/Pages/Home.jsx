@@ -1,31 +1,32 @@
-import NavBar from "../Components/NavBar.jsx";
-// import NavHome from "../Components/NavHome.jsx";
+import NavBar from "../Components/NavBar2.jsx";
 import ModernCarousel from "../Components/HomePage/Carousel.jsx";
+import Philosophy from "../Components/HomePage/Philosophy.jsx";
 import Footer from "../Components/Footer.jsx";
 import ReviewPanel from "../Components/HomePage/ReviewPanel.jsx";
+import { Parallax } from 'react-scroll-parallax';
 
 const Home = () => {
-  // const [navDone, setNavDone] = useState(false);
-
   return (
     <div className="w-full min-h-screen overflow-x-hidden flex flex-col">
-      {/* <NavBar onScrolled={() => setNavDone(true)} />*/}
       <NavBar />
-      {/* <div
-        className={
-          navDone
-            ? "relative w-full h-screen pointer-events-none"
-            : "fixed top-0 left-0 w-full h-screen z-1 pointer-events-none"
-        }
-      >
-      </div>*/}
+
       <ModernCarousel />
+
       <br />
+
+      <Parallax speed={10} >
         <ReviewPanel />
+      </Parallax>
+
+      
       <br />
-      {/* <InfiniteCarousel />*/}
+      <Philosophy />
       <br />
-      <div className="mt-auto"><Footer /></div>
+
+      
+      <div className="mt-auto">
+        <Footer />
+      </div>
     </div>
   );
 };

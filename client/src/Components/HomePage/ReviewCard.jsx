@@ -36,22 +36,10 @@ const ReviewCard = ({ review }) => {
 
 
         {/* customer info */}
-        <div className="mt-1 flex h-[52px] gap-3 items-center pl-1">
-          <img
-            src={review.avatar}
-            alt={review.name}
-            className="h-11 w-11 rounded-full object-cover"
-          />
-  
-          <div className="min-w-0">
-            <h4 className="truncate text-sm font-semibold text-neutral-900">
-              {review.name}
-            </h4>
-  
-            <p className="text-sm text-neutral-400">
-              {review.time}
-            </p>
-          </div>
+        <div className="min-w-0 flex h-[52px] gap-3 items-center pl-1">
+          <h4 className="truncate text-lg font-semibold text-neutral-900">
+            {review.name}
+          </h4>
         </div>
       </div>
     </div>

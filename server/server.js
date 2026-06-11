@@ -14,8 +14,7 @@ import cartRouter from './routes/cartRoute.js';
 import reviewRouter from './routes/reviewRoute.js';
 import orderRouter from './routes/orderRoute.js';
 import whatsappRouter from './routes/whatsappRoute.js';
-
-
+// import paymentRouter from './routes/paymentRoute.js';
 
 const app = express();
 
@@ -37,7 +36,10 @@ app.use(express.json());
 const PORT = process.env.PORT;
 
 
-db.connectPG();
+db.connectPG().catch((err) => {
+  console.error("❌ [pgdb] Failed to establish initial connection to PostgreSQL:", err.message);
+  console.error("Please check your internet connection, database configuration, or credentials.");
+});
 
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
@@ -45,9 +47,10 @@ app.use("/api/categories", categoryRouter);
 app.use("/api/product", productRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/cart", cartRouter);
-app.use("/api/review", reviewRouter);
+app.use("/api/reviews", reviewRouter);
 app.use("/api/order", orderRouter);
 app.use("/api/whatsapp", whatsappRouter);
+// app.use("/api/payment", paymentRouter);
 
 app.get("/", (req, res) => { res.send("API working") });
 

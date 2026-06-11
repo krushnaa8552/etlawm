@@ -4,11 +4,17 @@ import { upsertReview, getProductReviews, deleteReview } from "../controllers/re
 
 import { requireAuth } from "../middleware/auth.js";
 
+import {
+  getPublicCmsReviews,
+} from "../controllers/reviewController.js";
+
 const reviewRouter = express.Router();
 
-reviewRouter.post("/", requireAuth, upsertReview);
+reviewRouter.get("/cms", getPublicCmsReviews);
 
 reviewRouter.get("/product/:product_id", getProductReviews );
+
+reviewRouter.post("/", requireAuth, upsertReview);
 
 reviewRouter.delete("/product/:product_id", requireAuth, deleteReview);
 

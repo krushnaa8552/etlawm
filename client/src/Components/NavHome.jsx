@@ -1,43 +1,81 @@
-import { colours, fonts } from "../theme/theme";
+import { Search } from "lucide-react";
+import { Link } from "react-router-dom";
+import { fonts } from "../theme/theme";
+import BurgerMenu from "./BurgerMenu";
 
-const NavHome = () => {
-  const navLinks = ["Ritual", "Science", "Ingredients", "Collection"];
-  
+const NavHome = ({
+  isHomePage = false,
+  isScrolled = false,
+  atTop = true,
+  isHidden = false,
+  translateY = 0,
+  isMenuOpen = false,
+  onMenuOpen,
+}) => {
+  const useSolidNavbar = isScrolled && !isHidden;
+  const foregroundColor = isHomePage && !useSolidNavbar ? "#ffffff" : "#171717";
+
+  // Only animate the background when going white → transparent (returning to top).
+  // Transparent → white (scrolling down) snaps instantly.
+  const bgTransition = atTop
+    ? "background-color 300ms ease, border-color 300ms ease, box-shadow 300ms ease"
+    : "none";
+
   return (
-    <div>
-      <header
-        className="w-full bg-transparent"
-      >
-        <nav className="mx-auto flex h-60 w-full items-start justify-between px-12 py-8">
-          <a
-            href="/"
-            className="text-3xl tracking-[-0.04em] text-[#d8d0d2]"
-            style={{
-              fontFamily: fonts.logo,
-            }}
-          >
-            ETLAWM
-          </a>
+    <header
+      className={`
+        fixed inset-x-0 top-0 z-[100]
+        ${useSolidNavbar
+          ? "border-b border-black/10 bg-white shadow-[0_4px_30px_rgba(0,0,0,0.04)]"
+          : "border-b border-transparent bg-transparent shadow-none"
+        }
+        ${isMenuOpen
+          ? "pointer-events-none opacity-0"
+          : "pointer-events-auto opacity-100"
+        }
+      `}
+      style={{
+        transform: `translateY(${translateY}px)`,
+        transition: `transform 420ms cubic-bezier(0.22, 1, 0.36, 1), opacity 300ms ease, ${bgTransition}`,
+      }}
+    >
+      <nav className="grid h-[72px] w-full grid-cols-3 items-center px-5 sm:px-8 lg:px-12">
+        <div className="justify-self-start">
+          <BurgerMenu
+            isOpen={false}
+            onToggle={onMenuOpen}
+            color={foregroundColor}
+          />
+        </div>
 
-          <ul className="flex flex-col gap-5 text-right text-md uppercase tracking-[-0.03em]">
-            {navLinks.map((link) => (
-              <li key={link}>
-                <a
-                  href={`${link.toLowerCase()}`}
-                  className="text-[#d8d0d2] transition-colors duration-200 hover:text-white relative inline-block after:absolute after:left-0 after:-bottom-1 after:h-px after:w-0 after:bg-current after:transition-all after:duration-300 hover:after:w-full"
-                  style={{
-                    fontFamily: fonts.primary,
-                  }}
-                >
-                  {link}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      </header>
-    </div>
-  )
-}
+        <Link
+          to="/"
+          aria-label="ETLAWM home"
+          className="justify-self-center whitespace-nowrap text-[22px] leading-none tracking-[-0.045em] hover:opacity-65 sm:text-[27px]"
+          style={{
+            fontFamily: fonts.logo,
+            color: foregroundColor,
+            // Colour only transitions when going white → transparent (atTop).
+            transition: atTop && isHomePage ? "color 300ms ease, opacity 250ms ease" : "opacity 250ms ease",
+          }}
+        >
+          ETLAWM
+        </Link>
+
+        <Link
+          to="/search"
+          aria-label="Search"
+          className="flex h-10 w-10 items-center justify-end justify-self-end hover:opacity-60"
+          style={{
+            color: foregroundColor,
+            transition: atTop ? "color 300ms ease, opacity 250ms ease" : "opacity 250ms ease",
+          }}
+        >
+          <Search size={20} strokeWidth={1.25} />
+        </Link>
+      </nav>
+    </header>
+  );
+};
 
 export default NavHome;

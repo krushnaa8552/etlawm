@@ -1,78 +1,99 @@
-import React from 'react';
-import styled from 'styled-components';
+import styled from "styled-components";
 
-const Burger = () => {
+export default function BurgerMenu({
+  isOpen = false,
+  onToggle,
+  color = "#171717",
+}) {
   return (
-    <StyledWrapper>
-      <label className="burger" htmlFor="burger">
-        <input type="checkbox" id="burger" />
+    <StyledWrapper $color={color}>
+      <button
+        type="button"
+        className={`burger ${isOpen ? "is-open" : ""}`}
+        onClick={onToggle}
+        aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
+        aria-expanded={isOpen}
+      >
         <span />
         <span />
         <span />
-      </label>
+      </button>
     </StyledWrapper>
   );
 }
 
 const StyledWrapper = styled.div`
+  position: relative;
+  z-index: 1;
+
   .burger {
     position: relative;
-    width: 40px;
-    height: 30px;
-    background: transparent;
-    cursor: pointer;
     display: block;
-  }
-
-  .burger input {
-    display: none;
+    width: 40px;
+    height: 40px;
+    margin-left: -9px;
+    padding: 0;
+    border: 0;
+    color: inherit;
+    cursor: pointer;
+    background: transparent;
+    -webkit-tap-highlight-color: transparent;
   }
 
   .burger span {
-    display: block;
     position: absolute;
-    height: 4px;
-    width: 100%;
-    background: black;
-    border-radius: 9px;
-    opacity: 1;
-    left: 0;
-    transform: rotate(0deg);
-    transition: .25s ease-in-out;
+    left: 9px;
+    display: block;
+    height: 1px;
+    border-radius: 999px;
+    background: ${({ $color }) => $color};
+    transform-origin: center;
+    transition:
+      top 360ms cubic-bezier(0.22, 1, 0.36, 1),
+      width 300ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 360ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 200ms ease,
+      background-color 300ms ease;
   }
 
-  .burger span:nth-of-type(1) {
-    top: 0px;
-    transform-origin: left center;
+  .burger span:nth-child(1) {
+    top: 14px;
+    width: 22px;
   }
 
-  .burger span:nth-of-type(2) {
-    top: 50%;
-    transform: translateY(-50%);
-    transform-origin: left center;
+  .burger span:nth-child(2) {
+    top: 20px;
+    width: 17px;
   }
 
-  .burger span:nth-of-type(3) {
-    top: 100%;
-    transform-origin: left center;
-    transform: translateY(-100%);
+  .burger span:nth-child(3) {
+    top: 26px;
+    width: 22px;
   }
 
-  .burger input:checked ~ span:nth-of-type(1) {
+  .burger:hover span:nth-child(2) {
+    width: 22px;
+  }
+
+  .burger.is-open span:nth-child(1) {
+    top: 20px;
+    width: 22px;
     transform: rotate(45deg);
-    top: 0px;
-    left: 5px;
   }
 
-  .burger input:checked ~ span:nth-of-type(2) {
-    width: 0%;
+  .burger.is-open span:nth-child(2) {
+    width: 0;
     opacity: 0;
   }
 
-  .burger input:checked ~ span:nth-of-type(3) {
+  .burger.is-open span:nth-child(3) {
+    top: 20px;
+    width: 22px;
     transform: rotate(-45deg);
-    top: 28px;
-    left: 5px;
-  }`;
+  }
 
-export default Burger;
+  .burger:focus-visible {
+    outline: 1px solid ${({ $color }) => $color};
+    outline-offset: -5px;
+  }
+`;

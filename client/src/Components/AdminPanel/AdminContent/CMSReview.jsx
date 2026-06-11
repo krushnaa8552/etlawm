@@ -35,9 +35,18 @@ const ReviewContent = () => {
         Product Reviews
       </h1>
 
-      <p className="mt-1 text-sm text-[#7C7770]">
-        Manage customer reviews product-wise.
-      </p>
+      <div className="flex items-center justify-between">
+        <p className="mt-1 text-sm text-[#7C7770]">
+          Manage customer reviews product-wise.
+        </p>
+        <button
+          onClick={() => navigate('/admin/content/reviews/add-review')}
+          className="mt-1 px-5 py-2.5 rounded-lg text-xs uppercase tracking-widest font-semibold transition-all duration-200 cursor-pointer border-none shadow-sm hover:shadow-md"
+          style={{ backgroundColor: '#171715', color: '#f8f8f8' }}
+        >
+          + Add Review
+        </button>
+      </div>
 
       {loading && (
         <p className="mt-8 text-sm text-[#7C7770]">
@@ -58,7 +67,7 @@ const ReviewContent = () => {
               key={product.id}
               title={product.name}
               description={`Customer Reviews on ${product.name}`}
-              onClick={() => navigate(`/admin/reviews/${product.slug}`)}
+              onClick={() => navigate(`/admin/content/reviews/${product.slug}`)}
             />
           ))}
         </div>
