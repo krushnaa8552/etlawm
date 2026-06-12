@@ -133,12 +133,60 @@ const addAddress = async (req, res) => {
 //get
 const getAddress = async (req, res) => {
   try {
-    const { rows } = await db.addresses.findById(req.user.id);
-    if (!rows.length)
-      return res.status(404).json({ success: false, message: "User not found." });
+    const { rows } = await db.addresses.findByUser(req.user.id);
     res.json({ success: true, addresses: rows });
   } catch (err) {
-    console.error("[get user]", err);
+    console.error("[get addresses]", err);
+    res.status(500).json({ success: false, message: "Server error." });
+  }
+}
+
+//patch profile
+const updateProfile = async (req, res) => {
+  const { first_name, last_name, email } = req.body;
+
+  try {
+    const fieldsToUpdate = {};
+    if (first_name !== undefined) fieldsToUpdate.first_name = first_name.trim();
+    if (last_name !== undefined) fieldsToUpdate.last_name = last_name.trim();
+    
+    if (email !== undefined) {
+      const emailTrimmed = email.trim().toLowerCase();
+      if (emailTrimmed) {
+        // check if email is taken
+        const { rows: existing } = await db.users.findByEmail(emailTrimmed);
+        if (existing.length && existing[0].id !== req.user.id) {
+          return res.status(409).json({ success: false, message: "Email already registered to another account." });
+        }
+        fieldsToUpdate.email = emailTrimmed;
+      } else {
+        fieldsToUpdate.email = null;
+      }
+    }
+
+    if (Object.keys(fieldsToUpdate).length === 0) {
+      return res.status(400).json({ success: false, message: "No profile fields provided to update." });
+    }
+
+    const { rows } = await db.users.update(req.user.id, fieldsToUpdate);
+    const updatedUser = rows[0];
+
+    res.json({
+      success: true,
+      message: "Profile updated successfully.",
+      user: {
+        id: updatedUser.id,
+        phone_number: updatedUser.phone_number,
+        email: updatedUser.email,
+        first_name: updatedUser.first_name,
+        last_name: updatedUser.last_name,
+        onboarding_step: updatedUser.onboarding_step,
+        is_admin: updatedUser.is_admin ?? false,
+        is_active: updatedUser.is_active,
+      }
+    });
+  } catch (err) {
+    console.error("[update profile]", err);
     res.status(500).json({ success: false, message: "Server error." });
   }
 }
@@ -167,4 +215,24 @@ const deleteAddress = async (req, res) => {
   }
 }
 
-export { register, login, profile, addAddress, getAddress, updateAddress, deleteAddress };
+//post complaint
+const submitComplaint = async (req, res) => {
+  const { complaint } = req.body;
+
+  if (!complaint || !complaint.trim()) {
+    return res.status(400).json({ success: false, message: "Complaint is required." });
+  }
+
+  try {
+    const { rows } = await db.customerComplaints.create({
+      user_id: req.user.id,
+      complaint: complaint.trim()
+    });
+    res.status(201).json({ success: true, complaint: rows[0] });
+  } catch (err) {
+    console.error("[submit complaint]", err);
+    res.status(500).json({ success: false, message: "Server error." });
+  }
+}
+
+export { register, login, profile, addAddress, getAddress, updateProfile, updateAddress, deleteAddress, submitComplaint };

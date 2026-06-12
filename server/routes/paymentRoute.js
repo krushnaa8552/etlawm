@@ -1,14 +1,17 @@
 import express from "express";
+import { createOrder, validateOrder } from "../controllers/paymentController2.js";
 import { requireAuth } from "../middleware/auth.js";
-import {
-  createRazorpayOrder,
-  verifyRazorpayPayment,
-} from "../controllers/paymentController.js";
 
 const paymentRouter = express.Router();
 
-paymentRouter.post("/razorpay/order", requireAuth, createRazorpayOrder);
+paymentRouter.post(
+  "/create-order",
+  requireAuth, createOrder,
+);
 
-paymentRouter.post("/razorpay/verify", requireAuth, verifyRazorpayPayment);
+paymentRouter.post(
+  "/validate-order",
+  requireAuth, validateOrder,
+);
 
 export default paymentRouter;

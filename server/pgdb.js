@@ -855,6 +855,32 @@ const carts = {
 
     delete: (id) =>
         query(`DELETE FROM carts WHERE id = $1`, [id]),
+
+    applyCoupon: ({ cart_id, coupon_id }) =>
+        query(
+            `
+            UPDATE carts
+            SET
+              coupon_id = $2,
+              updated_at = NOW()
+            WHERE id = $1
+            RETURNING *
+            `,
+            [cart_id, coupon_id]
+        ),
+
+    removeCoupon: (cart_id) =>
+        query(
+            `
+            UPDATE carts
+            SET
+              coupon_id = NULL,
+              updated_at = NOW()
+            WHERE id = $1
+            RETURNING *
+            `,
+            [cart_id]
+        ),
 };
 
 // ─── Cart Items ───────────────────────────────────────────────────────────────
@@ -1041,6 +1067,74 @@ const orders = {
              WHERE id = $2 RETURNING id, status`,
             [status, id]
         ),
+
+    updatePaymentOrderId: (order_id, razorpay_order_id) =>
+        query(
+            `UPDATE orders SET razorpay_order_id = $1, updated_at = now()
+             WHERE id = $2 RETURNING *`,
+            [razorpay_order_id, order_id]
+        ),
+
+    markPaymentPaid: async ({
+        order_id,
+        razorpay_order_id,
+        razorpay_payment_id,
+        razorpay_signature,
+    }) => {
+        const client = await pool.connect();
+        try {
+            await client.query('BEGIN');
+
+            const { rows: [order] } = await client.query(
+                `UPDATE orders
+                 SET status = 'paid',
+                     razorpay_order_id = $1,
+                     razorpay_payment_id = $2,
+                     paid_at = now(),
+                     updated_at = now()
+                 WHERE id = $3
+                 RETURNING *`,
+                [razorpay_order_id, razorpay_payment_id, order_id]
+            );
+
+            if (order) {
+                const { rows: [cart] } = await client.query(
+                    `SELECT id FROM carts WHERE user_id = $1`,
+                    [order.user_id]
+                );
+
+                if (cart) {
+                    const { rows: orderItems } = await client.query(
+                        `SELECT product_id FROM order_items WHERE order_id = $1`,
+                        [order.id]
+                    );
+
+                    const productIds = orderItems.map(item => item.product_id);
+
+                    if (productIds.length > 0) {
+                        await client.query(
+                            `DELETE FROM cart_items
+                             WHERE cart_id = $1 AND product_id = ANY($2::uuid[])`,
+                            [cart.id, productIds]
+                        );
+                    }
+
+                    await client.query(
+                        `UPDATE carts SET coupon_id = NULL WHERE id = $1`,
+                        [cart.id]
+                    );
+                }
+            }
+
+            await client.query('COMMIT');
+            return { rows: [order] };
+        } catch (err) {
+            await client.query('ROLLBACK');
+            throw err;
+        } finally {
+            client.release();
+        }
+    },
 };
 
 // ─── Reviews ──────────────────────────────────────────────────────────────────
@@ -1107,6 +1201,25 @@ const adminSettings = {
     )
 };
 
+// ─── Customer Complaints ──────────────────────────────────────────────────────
+const customerComplaints = {
+    create: ({ user_id, complaint }) =>
+        query(
+            `INSERT INTO customer_complaints (user_id, complaint)
+             VALUES ($1, $2)
+             RETURNING *`,
+            [user_id, complaint]
+        ),
+
+    findByUser: (user_id) =>
+        query(
+            `SELECT * FROM customer_complaints
+             WHERE user_id = $1
+             ORDER BY created_at DESC`,
+            [user_id]
+        )
+};
+
 // ─── Exports ──────────────────────────────────────────────────────────────────
 const db = {
   cmsReviews,
@@ -1127,6 +1240,7 @@ const db = {
   reviews,
   adminPhones,
   adminSettings,
+  customerComplaints,
 };
 
 export default db;

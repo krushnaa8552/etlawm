@@ -14,7 +14,13 @@ function CartSummary({
   onApplyCoupon,
   onRemoveCoupon,
   onCheckout,
+  checkoutButtonLabel = "Proceed to checkout",
+  checkoutDisabled = false,
+  checkoutHelperText = "",
 }) {
+  const isButtonDisabled =
+    selectedItems.length === 0 || checkoutDisabled;
+
   return (
     <aside className="lg:sticky lg:top-[104px] lg:self-start">
       <div className="space-y-5">
@@ -88,7 +94,9 @@ function CartSummary({
 
                 <input
                   value={couponCode}
-                  onChange={(event) => setCouponCode(event.target.value)}
+                  onChange={(event) =>
+                    setCouponCode(event.target.value)
+                  }
                   placeholder="Enter coupon code"
                   className="min-w-0 flex-1 bg-transparent py-4 text-sm outline-none"
                   style={{
@@ -143,12 +151,17 @@ function CartSummary({
             </p>
 
             <div className="space-y-3">
-              <PriceRow label="Subtotal" value={`₹${subtotal.toFixed(2)}`} />
+              <PriceRow
+                label="Subtotal"
+                value={`₹${subtotal.toFixed(2)}`}
+              />
 
               <PriceRow
                 label="Coupon discount"
                 value={
-                  discount > 0 ? `-₹${discount.toFixed(2)}` : "₹0.00"
+                  discount > 0
+                    ? `-₹${discount.toFixed(2)}`
+                    : "₹0.00"
                 }
                 highlight={discount > 0}
               />
@@ -194,10 +207,22 @@ function CartSummary({
           </div>
         </section>
 
+        {checkoutHelperText && (
+          <p
+            className="text-sm opacity-55"
+            style={{
+              color: colours.text,
+              fontFamily: fonts.secondary,
+            }}
+          >
+            {checkoutHelperText}
+          </p>
+        )}
+
         <button
           type="button"
           onClick={onCheckout}
-          disabled={selectedItems.length === 0}
+          disabled={isButtonDisabled}
           className="flex w-full cursor-pointer items-center justify-center gap-3 rounded-xl px-5 py-4 text-sm font-semibold transition-opacity hover:opacity-85 disabled:cursor-not-allowed disabled:opacity-35"
           style={{
             backgroundColor: colours.text,
@@ -205,7 +230,7 @@ function CartSummary({
             fontFamily: fonts.secondary,
           }}
         >
-          Proceed to checkout
+          {checkoutButtonLabel}
           <ArrowRight size={17} />
         </button>
       </div>

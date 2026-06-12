@@ -16,24 +16,7 @@ function CartItemsSection({
   return (
     <section className="min-w-0">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <label className="flex cursor-pointer items-center gap-2">
-          <input
-            type="checkbox"
-            checked={allSelected}
-            onChange={onToggleAll}
-            className="h-4 w-4 cursor-pointer accent-black"
-          />
-
-          <span
-            className="text-sm font-semibold sm:text-base"
-            style={{
-              color: colours.text,
-              fontFamily: fonts.primary,
-            }}
-          >
-            {selectedCount}/{items.length} items selected
-          </span>
-        </label>
+        
 
         {selectedCount > 0 && (
           <button
