@@ -2,10 +2,16 @@ import Razorpay from "razorpay";
 import crypto from "crypto";
 import db from "../pgdb.js";
 
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
-});
+let razorpayInstance = null;
+const getRazorpay = () => {
+  if (!razorpayInstance) {
+    razorpayInstance = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID,
+      key_secret: process.env.RAZORPAY_KEY_SECRET,
+    });
+  }
+  return razorpayInstance;
+};
 
 export async function createRazorpayOrder(req, res) {
   try {
@@ -50,7 +56,7 @@ export async function createRazorpayOrder(req, res) {
       });
     }
 
-    const razorpayOrder = await razorpay.orders.create({
+    const razorpayOrder = await getRazorpay().orders.create({
       amount: amountInPaise,
       currency: "INR",
       receipt: order.id,

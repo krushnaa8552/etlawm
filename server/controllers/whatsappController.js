@@ -4,13 +4,13 @@ import * as wa from "../scrap.js";
 import { askGemini } from "../gemini.js";
 import { getHistory, saveMessage } from "../chatMemory.js";
 
-const WA_API_URL =
+const getWaApiUrl = () =>
   `https://graph.facebook.com/v25.0/` +
   `${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`;
 
 const sendWAMessage = async (to, message) => {
   await axios({
-    url: WA_API_URL,
+    url: getWaApiUrl(),
     method: "POST",
     headers: {
       Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,

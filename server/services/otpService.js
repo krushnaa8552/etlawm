@@ -13,7 +13,6 @@ import * as wa from '../scrap.js';
 
 const OTP_LENGTH = 6;
 const BCRYPT_ROUNDS = 10;
-const WA_OTP_TEMPLATE = process.env.WA_OTP_TEMPLATE || 'otp_auth'; // Meta-approved template name
 
 /**
  * Generate a cryptographically random numeric OTP.
@@ -75,7 +74,8 @@ async function sendOtp(phone, otp) {
     // The template must be named per WA_OTP_TEMPLATE and pre-approved in Meta
     // Business Manager with one body parameter containing the OTP code.
     try {
-        await wa.sendWhatsAppMessage(phone, otp, WA_OTP_TEMPLATE);
+        const template = process.env.WA_OTP_TEMPLATE || 'otp_auth';
+        await wa.sendWhatsAppMessage(phone, otp, template);
     } catch (err) {
         // Non-fatal: log the error but don't crash the request.
         // The caller will still return the generic "OTP sent" response.
