@@ -1,5 +1,3 @@
-// src/components/admin/collection/CategoryFormModal.jsx
-
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { colours, fonts } from "../../../theme/theme";

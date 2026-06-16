@@ -1,4 +1,4 @@
-import CollectionProductCard from "./CollectionProductCard.jsx";
+import CollectionProductCard from "./CollectionProductCard2.jsx";
 import { colours, fonts } from "../../theme/theme.js";
 
 /**

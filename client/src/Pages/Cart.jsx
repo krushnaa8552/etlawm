@@ -38,11 +38,13 @@ const DEFAULT_ADDRESS_DETAILS = {
   phoneNumber: "",
   pincode: "",
   addressLine: "",
+  locality: "",
   city: "",
   state: "",
   landmark: "",
   deliveryType: "standard",
   orderNotes: "",
+  pincodeVerified: false,
 };
 
 
@@ -138,7 +140,8 @@ function Cart() {
           name: addressDetails.fullName,
           line1: [
             addressDetails.addressLine,
-            addressDetails.landmark,
+              addressDetails.locality,
+              addressDetails.landmark,
           ]
             .filter(Boolean)
             .join(", "),
@@ -303,9 +306,15 @@ function Cart() {
       "city",
       "state",
     ];
-
-    return requiredFields.every((field) =>
+  
+    const hasRequiredFields = requiredFields.every((field) =>
       String(addressDetails[field] ?? "").trim(),
+    );
+  
+    return (
+      hasRequiredFields &&
+      String(addressDetails.pincode || "").length === 6 &&
+      addressDetails.pincodeVerified === true
     );
   }, [addressDetails]);
 
@@ -591,6 +600,19 @@ function Cart() {
     return <CartSkeleton />;
   }
 
+  function handleAddressDetailsChange(updater) {
+    setCheckoutOrder(null);
+    sessionStorage.removeItem("checkoutOrder");
+  
+    setAddressDetails((current) => {
+      if (typeof updater === "function") {
+        return updater(current);
+      }
+  
+      return updater;
+    });
+  }
+
   return (
     <div>
       <Navbar />
@@ -642,7 +664,7 @@ function Cart() {
             {checkoutStep === "address" && (
               <AddressAndDetails
                 addressDetails={addressDetails}
-                setAddressDetails={setAddressDetails}
+                setAddressDetails={handleAddressDetailsChange}
                 isComplete={isAddressComplete}
                 onBack={() => setCheckoutStep("cart")}
                 onContinue={handleAddressContinue}
@@ -789,9 +811,8 @@ function CheckoutReview({
               }}
             >
               {addressDetails.addressLine}
-              {addressDetails.landmark
-                ? `, ${addressDetails.landmark}`
-                : ""}
+              {addressDetails.locality ? `, ${addressDetails.locality}` : ""}
+              {addressDetails.landmark ? `, ${addressDetails.landmark}` : ""}
               , {addressDetails.city}, {addressDetails.state} -{" "}
               {addressDetails.pincode}
             </p>

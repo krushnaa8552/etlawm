@@ -1,5 +1,5 @@
 import express from 'express';
-import { register, login, profile, addAddress, getAddress, updateProfile, updateAddress, deleteAddress, submitComplaint } from '../controllers/userController.js'
+import { getPincodeDetails, register, login, profile, addAddress, getAddress, updateProfile, updateAddress, deleteAddress, submitComplaint } from '../controllers/userController.js'
 import { requireAuth } from '../middleware/auth.js';
 
 const userRouter = express.Router();
@@ -12,6 +12,7 @@ userRouter.get('/address', requireAuth, getAddress);
 userRouter.post('/address', requireAuth, addAddress);
 userRouter.patch('/address/:id', requireAuth, updateAddress);
 userRouter.delete('/address/:id', requireAuth, deleteAddress);
+userRouter.get("/address/:pincode", requireAuth, getPincodeDetails);
 userRouter.post('/complaint', requireAuth, submitComplaint);
 
 export default userRouter;

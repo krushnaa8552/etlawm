@@ -20,5 +20,5 @@ export const fonts = {
   logo: " 'Libertinus Sans', sans-serif",
   font2: " 'Handlee', sans-serif",
   primary: "'Crimson Text', Georgia, serif",
-  secondary: "'Sanchez', serif",
+  secondary: "'Montserrat', serif",
 };

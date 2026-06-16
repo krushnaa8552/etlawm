@@ -56,7 +56,7 @@ export async function uploadCategoryImage(file) {
   formData.append("image", file);
 
   const response = await fetch(
-    `${API}/api/admin/upload`,
+    `${API}/api/admin/upload?bucket=category-images`,
     {
       method: "POST",
       headers: {

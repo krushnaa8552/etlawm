@@ -82,7 +82,7 @@ const uploadImage = async (req, res) => {
   const supabaseKey =
     process.env.SUPABASE_KEY;
 
-  const bucketName = "product-images";
+  const bucketName = req.query.bucket || req.body.bucket || "product-images";
 
   if (!supabaseUrl || !supabaseKey) {
     return res.status(500).json({
@@ -109,8 +109,9 @@ const uploadImage = async (req, res) => {
       ? originalExtension
       : `.${req.file.mimetype.split("/")[1]}`;
 
+    const prefix = bucketName === "category-images" ? "category" : "product";
     const fileName =
-      `product-${Date.now()}-` +
+      `${prefix}-${Date.now()}-` +
       `${crypto.randomUUID()}${extension}`;
 
     const encodedFileName = encodeURIComponent(fileName);

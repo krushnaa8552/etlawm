@@ -238,9 +238,9 @@ export default function Collection() {
             padding: "48px 24px 0",
           }}
         >
-          <Breadcrumb category={activeCategory} />
+          <Breadcrumb />
 
-          <div style={{ marginBottom: "12px" }}>
+          {/* <div style={{ marginBottom: "12px" }}>
             <h1
               style={{
                 fontFamily: fonts.primary,
@@ -254,18 +254,16 @@ export default function Collection() {
             >
               {pageTitle}
             </h1>
+          </div>*/}
 
-            
-          </div>
-
-          <div
+          {/* <div
             style={{
               width: "30%",
               height: "1px",
               background: `linear-gradient(to right, ${colours.accent}, transparent)`,
               margin: "20px 0 28px",
             }}
-          />
+          />*/}
         </section>
 
         {/* ── Category cards, only on /collection ─────────────────── */}

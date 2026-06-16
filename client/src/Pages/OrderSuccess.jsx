@@ -85,7 +85,7 @@ function OrderSuccess() {
               className="text-3xl font-semibold tracking-tight"
               style={{
                 color: colours.text,
-                fontFamily: fonts.primary,
+                fontFamily: fonts.secondary,
               }}
             >
               Thank you for your order!
@@ -145,7 +145,7 @@ function OrderSuccess() {
                     className="text-lg font-semibold mb-4"
                     style={{
                       color: colours.text,
-                      fontFamily: fonts.primary,
+                      fontFamily: fonts.secondary,
                     }}
                   >
                     Delivery Address
@@ -174,7 +174,7 @@ function OrderSuccess() {
                     className="text-lg font-semibold mb-4"
                     style={{
                       color: colours.text,
-                      fontFamily: fonts.primary,
+                      fontFamily: fonts.secondary,
                     }}
                   >
                     Items Ordered
@@ -234,7 +234,7 @@ function OrderSuccess() {
                     <span
                       style={{
                         color: colours.text,
-                        fontFamily: fonts.primary,
+                        fontFamily: fonts.secondary,
                       }}
                     >
                       Total Paid
@@ -242,7 +242,7 @@ function OrderSuccess() {
                     <span
                       style={{
                         color: colours.text,
-                        fontFamily: fonts.primary,
+                        fontFamily: fonts.secondary,
                       }}
                     >
                       ₹{Number(order.total).toFixed(2)}

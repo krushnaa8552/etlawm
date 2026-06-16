@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useEffect } from 'react';
+import ScrollToTop from './Components/ScrollToTop.jsx';
 import Lenis from 'lenis';
 import './App.css';
 import { AuthProvider } from './context/AuthContext';
@@ -42,6 +43,8 @@ function AppRoutes() {
     };
   }, []);
 
+  
+
   if (loading) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: '#FCFBF9' }}>
@@ -51,50 +54,53 @@ function AppRoutes() {
   }
   
     return (
-      <Routes>
-        <Route path="/scrap" element={<Scrapping />} />
-        <Route path="/"                         element={<Home2 />} />
-        <Route path="/home2"                    element={<Home2 />} />
-        <Route path="/home-old"                 element={<Home />} />
-        <Route path="/login"                    element={<Login />} />
-        {/* Collection routes */}
-        <Route path="/collection"               element={<Collection />} />
-        <Route path="/collection/:category"     element={<Collection />} />
-        {/* Individual product */}
-        <Route path="/product/:slug"            element={<Product />} />
-        <Route path="/cart"                     element={<Cart />} />
-        <Route path="/ritual"                   element={<Ritual />} />
-        <Route path="/ingredients"              element={<Ingredients />} />
-
-        {/* Protected — redirects to /login if not authenticated */}
-        <Route
-            path="/dashboard/*"
+      <>
+        <ScrollToTop />
+        <Routes>
+          <Route path="/scrap" element={<Scrapping />} />
+          <Route path="/"                         element={<Home2 />} />
+          <Route path="/home2"                    element={<Home2 />} />
+          <Route path="/home-old"                 element={<Home />} />
+          <Route path="/login"                    element={<Login />} />
+          {/* Collection routes */}
+          <Route path="/collection"               element={<Collection />} />
+          <Route path="/collection/:category"     element={<Collection />} />
+          {/* Individual product */}
+          <Route path="/product/:slug"            element={<Product />} />
+          <Route path="/cart"                     element={<Cart />} />
+          <Route path="/ritual"                   element={<Ritual />} />
+          <Route path="/ingredients"              element={<Ingredients />} />
+  
+          {/* Protected — redirects to /login if not authenticated */}
+          <Route
+              path="/dashboard/*"
+              element={
+                  <ProtectedRoute>
+                      <DashBoard />
+                  </ProtectedRoute>
+              }
+          />
+          <Route
+              path="/orders/:orderId/success"
+              element={
+                  <ProtectedRoute>
+                      <OrderSuccess />
+                  </ProtectedRoute>
+              }
+          />
+  
+          {/* Admin Routes */}
+  
+          <Route
+            path="/admin/*"
             element={
-                <ProtectedRoute>
-                    <DashBoard />
-                </ProtectedRoute>
+              <AdminRoute>
+                <AdminDashBoard />
+              </AdminRoute>
             }
-        />
-        <Route
-            path="/orders/:orderId/success"
-            element={
-                <ProtectedRoute>
-                    <OrderSuccess />
-                </ProtectedRoute>
-            }
-        />
-
-        {/* Admin Routes */}
-
-        <Route
-          path="/admin/*"
-          element={
-            <AdminRoute>
-              <AdminDashBoard />
-            </AdminRoute>
-          }
-        />
-    </Routes>
+          />
+        </Routes>
+      </>
   );
 }
 

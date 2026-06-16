@@ -1,13 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../../context/AuthContext";
-import { getAddresses } from "../../services/addressService";
+import {
+  getAddresses,
+  getPincodeDetails,
+} from "../../services/addressService";
 import {
   ArrowLeft,
-  ArrowRight,
   Home,
   MapPin,
   Phone,
-  Truck,
   User,
 } from "lucide-react";
 import { colours, fonts } from "../../theme/theme";
@@ -20,43 +21,192 @@ function AddressAndDetails({
   onContinue,
 }) {
   const { user } = useAuth();
+
   const [savedAddresses, setSavedAddresses] = useState([]);
   const [selectedAddressId, setSelectedAddressId] = useState("");
+  const [localities, setLocalities] = useState([]);
+  const [pincodeLoading, setPincodeLoading] = useState(false);
+  const [pincodeError, setPincodeError] = useState("");
+
+  const lastCheckedPincodeRef = useRef("");
 
   useEffect(() => {
     async function loadSavedAddresses() {
       try {
         const token = localStorage.getItem("token");
         if (!token) return;
+
         const res = await getAddresses();
-        if (res && res.success) {
-          setSavedAddresses(res.addresses || []);
-          const def = (res.addresses || []).find(a => a.is_default);
-          if (def) {
-            selectAddress(def);
+
+        if (res?.success) {
+          const addresses = res.addresses || [];
+          setSavedAddresses(addresses);
+
+          const defaultAddress = addresses.find(
+            (address) => address.is_default,
+          );
+
+          if (defaultAddress) {
+            selectAddress(defaultAddress);
           }
         }
       } catch (err) {
         console.error("Failed to load saved addresses in cart:", err);
       }
     }
+
     loadSavedAddresses();
   }, []);
 
-  function selectAddress(addr) {
-    setSelectedAddressId(addr.id);
-    setAddressDetails(current => ({
+  useEffect(() => {
+    const pincode = String(addressDetails.pincode || "").trim();
+
+    if (pincode.length !== 6) {
+      lastCheckedPincodeRef.current = "";
+      setLocalities([]);
+      setPincodeError("");
+      setPincodeLoading(false);
+      return;
+    }
+
+    if (lastCheckedPincodeRef.current === pincode) {
+      return;
+    }
+
+    lastCheckedPincodeRef.current = pincode;
+
+    let cancelled = false;
+
+    const timer = setTimeout(async () => {
+      try {
+        setPincodeLoading(true);
+        setPincodeError("");
+
+        const data = await getPincodeDetails(pincode);
+
+        if (cancelled) return;
+
+        const localityOptions = data.localities || [];
+
+        setLocalities(localityOptions);
+
+        if (!data.isDeliverable) {
+          setPincodeError("This PIN code is not marked as deliverable.");
+
+          setAddressDetails((current) => {
+            if (String(current.pincode || "").trim() !== pincode) {
+              return current;
+            }
+
+            return {
+              ...current,
+              city: data.district || "",
+              state: data.state || "",
+              locality: localityOptions[0]?.name || "",
+              pincodeVerified: false,
+            };
+          });
+
+          return;
+        }
+
+        setAddressDetails((current) => {
+          if (String(current.pincode || "").trim() !== pincode) {
+            return current;
+          }
+
+          return {
+            ...current,
+            city: data.district || "",
+            state: data.state || "",
+            locality: current.locality || localityOptions[0]?.name || "",
+            pincodeVerified: true,
+          };
+        });
+      } catch (error) {
+        if (cancelled) return;
+
+        setLocalities([]);
+        setPincodeError(error.message || "Invalid PIN code.");
+
+        setAddressDetails((current) => {
+          if (String(current.pincode || "").trim() !== pincode) {
+            return current;
+          }
+
+          return {
+            ...current,
+            city: "",
+            state: "",
+            locality: "",
+            pincodeVerified: false,
+          };
+        });
+      } finally {
+        if (!cancelled) {
+          setPincodeLoading(false);
+        }
+      }
+    }, 500);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [addressDetails.pincode, setAddressDetails]);
+
+  function selectAddress(address) {
+    const savedPincode = String(address.pincode || "").trim();
+
+    lastCheckedPincodeRef.current = savedPincode;
+
+    setSelectedAddressId(address.id);
+    setPincodeError("");
+    setLocalities([]);
+    setPincodeLoading(false);
+
+    setAddressDetails((current) => ({
       ...current,
-      addressLine: addr.line1,
-      city: addr.city,
-      state: addr.state,
-      pincode: addr.pincode,
-      fullName: current.fullName || (user ? `${user.first_name || ""} ${user.last_name || ""}`.trim() : ""),
-      phoneNumber: current.phoneNumber || (user ? user.phone_number || "" : ""),
+      addressLine: address.line1 || "",
+      city: address.city || "",
+      state: address.state || "",
+      pincode: savedPincode,
+      locality: address.locality || "",
+      pincodeVerified: true,
+      fullName:
+        current.fullName ||
+        (user
+          ? `${user.first_name || ""} ${user.last_name || ""}`.trim()
+          : ""),
+      phoneNumber:
+        current.phoneNumber || (user ? user.phone_number || "" : ""),
     }));
   }
 
   function updateField(name, value) {
+    setSelectedAddressId("");
+
+    if (name === "pincode") {
+      const nextPincode = value.replace(/\D/g, "").slice(0, 6);
+
+      lastCheckedPincodeRef.current = "";
+
+      setAddressDetails((current) => ({
+        ...current,
+        pincode: nextPincode,
+        city: "",
+        state: "",
+        locality: "",
+        pincodeVerified: false,
+      }));
+
+      setLocalities([]);
+      setPincodeError("");
+      setPincodeLoading(false);
+
+      return;
+    }
+
     setAddressDetails((current) => ({
       ...current,
       [name]: value,
@@ -119,15 +269,30 @@ function AddressAndDetails({
         }}
       >
         {savedAddresses.length > 0 && (
-          <div className="mb-6 rounded-2xl border p-4 bg-white" style={{ borderColor: colours.border }}>
-            <label className="block mb-2 text-sm font-semibold" style={{ color: colours.text, fontFamily: fonts.secondary }}>
-              Select from Saved Addresses
+          <div
+            className="mb-6 rounded-2xl border bg-white p-4"
+            style={{ borderColor: colours.border }}
+          >
+            <label
+              className="mb-2 block text-sm font-semibold"
+              style={{
+                color: colours.text,
+                fontFamily: fonts.secondary,
+              }}
+            >
+              Select from saved addresses
             </label>
+
             <select
               value={selectedAddressId}
-              onChange={(e) => {
-                const addr = savedAddresses.find(a => a.id === e.target.value);
-                if (addr) selectAddress(addr);
+              onChange={(event) => {
+                const address = savedAddresses.find(
+                  (item) => String(item.id) === String(event.target.value),
+                );
+
+                if (address) {
+                  selectAddress(address);
+                }
               }}
               className="h-12 w-full rounded-xl border bg-neutral-50 px-4 text-sm outline-none"
               style={{
@@ -136,10 +301,13 @@ function AddressAndDetails({
                 fontFamily: fonts.secondary,
               }}
             >
-              <option value="" disabled>-- Select a saved address --</option>
-              {savedAddresses.map(addr => (
-                <option key={addr.id} value={addr.id}>
-                  {addr.line1}, {addr.city}, {addr.state} - {addr.pincode} {addr.is_default ? " (Default)" : ""}
+              <option value="">-- Select a saved address --</option>
+
+              {savedAddresses.map((address) => (
+                <option key={address.id} value={address.id}>
+                  {address.line1}, {address.city}, {address.state} -{" "}
+                  {address.pincode}
+                  {address.is_default ? " (Default)" : ""}
                 </option>
               ))}
             </select>
@@ -167,15 +335,54 @@ function AddressAndDetails({
             required
           />
 
-          <InputField
-            icon={<MapPin size={16} />}
-            label="Pincode"
-            name="pincode"
-            value={addressDetails.pincode}
-            placeholder="Enter pincode"
-            onChange={updateField}
-            required
-          />
+          <div>
+            <InputField
+              icon={<MapPin size={16} />}
+              label="PIN code"
+              name="pincode"
+              value={addressDetails.pincode}
+              placeholder="Enter 6-digit PIN code"
+              onChange={updateField}
+              inputMode="numeric"
+              required
+            />
+
+            {pincodeLoading && (
+              <p
+                className="mt-2 text-xs"
+                style={{
+                  color: colours.mutedText,
+                  fontFamily: fonts.secondary,
+                }}
+              >
+                Checking PIN code...
+              </p>
+            )}
+
+            {pincodeError && (
+              <p
+                className="mt-2 text-xs"
+                style={{
+                  color: "#b91c1c",
+                  fontFamily: fonts.secondary,
+                }}
+              >
+                {pincodeError}
+              </p>
+            )}
+
+            {addressDetails.pincodeVerified && !pincodeError && (
+              <p
+                className="mt-2 text-xs"
+                style={{
+                  color: "#047857",
+                  fontFamily: fonts.secondary,
+                }}
+              >
+                PIN code verified.
+              </p>
+            )}
+          </div>
 
           <InputField
             icon={<Home size={16} />}
@@ -187,12 +394,49 @@ function AddressAndDetails({
             required
           />
 
+          <label className="block">
+            <span
+              className="mb-2 block text-sm font-semibold"
+              style={{
+                color: colours.text,
+                fontFamily: fonts.secondary,
+              }}
+            >
+              Locality
+            </span>
+
+            <select
+              value={addressDetails.locality || ""}
+              onChange={(event) => updateField("locality", event.target.value)}
+              disabled={localities.length === 0}
+              className="h-12 w-full rounded-xl border bg-transparent px-4 text-sm outline-none disabled:cursor-not-allowed disabled:opacity-60"
+              style={{
+                borderColor: colours.border,
+                color: colours.text,
+                fontFamily: fonts.secondary,
+              }}
+            >
+              <option value="">
+                {localities.length === 0
+                  ? "Enter PIN code first"
+                  : "Select locality"}
+              </option>
+
+              {localities.map((locality) => (
+                <option key={locality.name} value={locality.name}>
+                  {locality.name}
+                </option>
+              ))}
+            </select>
+          </label>
+
           <InputField
-            label="City"
+            label="City / district"
             name="city"
             value={addressDetails.city}
-            placeholder="Enter city"
+            placeholder="Autofilled from PIN code"
             onChange={updateField}
+            readOnly
             required
           />
 
@@ -200,8 +444,9 @@ function AddressAndDetails({
             label="State"
             name="state"
             value={addressDetails.state}
-            placeholder="Enter state"
+            placeholder="Autofilled from PIN code"
             onChange={updateField}
+            readOnly
             required
           />
 
@@ -255,9 +500,7 @@ function AddressAndDetails({
 
           <textarea
             value={addressDetails.orderNotes}
-            onChange={(event) =>
-              updateField("orderNotes", event.target.value)
-            }
+            onChange={(event) => updateField("orderNotes", event.target.value)}
             rows={4}
             placeholder="Any delivery instructions"
             className="w-full resize-none rounded-xl border bg-transparent px-4 py-3 text-sm outline-none"
@@ -268,8 +511,6 @@ function AddressAndDetails({
             }}
           />
         </label>
-
-
       </form>
     </section>
   );
@@ -283,6 +524,8 @@ function InputField({
   placeholder,
   onChange,
   required = false,
+  inputMode,
+  readOnly = false,
 }) {
   return (
     <label className="block">
@@ -301,15 +544,18 @@ function InputField({
         className="flex h-12 items-center gap-3 rounded-xl border px-4"
         style={{
           borderColor: colours.border,
+          backgroundColor: readOnly ? "rgba(0,0,0,0.03)" : "transparent",
         }}
       >
         {icon && <span className="opacity-45">{icon}</span>}
 
         <input
-          value={value}
+          value={value || ""}
           onChange={(event) => onChange(name, event.target.value)}
           placeholder={placeholder}
-          className="min-w-0 flex-1 bg-transparent text-sm outline-none"
+          inputMode={inputMode}
+          readOnly={readOnly}
+          className="min-w-0 flex-1 bg-transparent text-sm outline-none read-only:cursor-not-allowed"
           style={{
             color: colours.text,
             fontFamily: fonts.secondary,

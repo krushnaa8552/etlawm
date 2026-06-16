@@ -361,7 +361,7 @@ const ProductsCollection = ({ categorySlug }) => {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          marginBottom: "32px",
+          marginBottom: "24px",
           flexWrap: "wrap",
           gap: "12px",
         }}
@@ -383,11 +383,11 @@ const ProductsCollection = ({ categorySlug }) => {
         </div>
 
         <div style={{ flex: 1, minWidth: 0 }}>
-          <ActiveChips
+          {/* <ActiveChips
             filters={filters}
             setFilters={setFilters}
             categories={categories}
-          />
+          />*/}
 
           {loading && <SkeletonGrid />}
 

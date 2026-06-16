@@ -235,4 +235,81 @@ const submitComplaint = async (req, res) => {
   }
 }
 
-export { register, login, profile, addAddress, getAddress, updateProfile, updateAddress, deleteAddress, submitComplaint };
+//check pincode
+const getPincodeDetails = async (req, res) => {
+  try {
+    const { pincode } = req.params;
+
+    if (!/^\d{6}$/.test(pincode)) {
+      return res.status(400).json({
+        success: false,
+        message: "Enter a valid 6-digit PIN code.",
+      });
+    }
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+
+    const response = await fetch(
+      `https://api.postalpincode.in/pincode/${pincode}`,
+      {
+        signal: controller.signal,
+      }
+    );
+
+    clearTimeout(timeout);
+
+    if (!response.ok) {
+      return res.status(502).json({
+        success: false,
+        message: "Could not verify PIN code right now.",
+      });
+    }
+
+    const data = await response.json();
+    const result = data?.[0];
+
+    if (
+      !result ||
+      result.Status !== "Success" ||
+      !Array.isArray(result.PostOffice) ||
+      result.PostOffice.length === 0
+    ) {
+      return res.status(404).json({
+        success: false,
+        message: "PIN code not found.",
+      });
+    }
+
+    const postOffices = result.PostOffice;
+    const first = postOffices[0];
+
+    const localities = postOffices.map((po) => ({
+      name: po.Name,
+      branchType: po.BranchType,
+      deliveryStatus: po.DeliveryStatus,
+      block: po.Block,
+    }));
+
+    return res.status(200).json({
+      success: true,
+      pincode,
+      district: first.District,
+      state: first.State,
+      country: first.Country || "India",
+      localities,
+      isDeliverable: postOffices.some(
+        (po) => po.DeliveryStatus?.toLowerCase() === "delivery"
+      ),
+    });
+  } catch (error) {
+    console.error("PIN code lookup error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to validate PIN code.",
+    });
+  }
+}
+
+export { getPincodeDetails, register, login, profile, addAddress, getAddress, updateProfile, updateAddress, deleteAddress, submitComplaint };
