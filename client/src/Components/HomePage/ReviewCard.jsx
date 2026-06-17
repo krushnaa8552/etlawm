@@ -29,7 +29,12 @@ const ReviewCard = ({ review }) => {
             ))}
           </div>
           
-          <p className="line-clamp-4 text-sm leading-6 text-neutral-700 align-top">
+          <p
+            className="line-clamp-4 text-sm leading-6 text-neutral-700 align-top"
+            style={{
+              fontFamily: fonts.secondary
+            }}
+          >
             {review.text}
           </p>
         </div>
@@ -37,7 +42,12 @@ const ReviewCard = ({ review }) => {
 
         {/* customer info */}
         <div className="min-w-0 flex h-[52px] gap-3 items-center pl-1">
-          <h4 className="truncate text-lg font-semibold text-neutral-900">
+          <h4
+            className="truncate text-lg font-semibold text-neutral-900"
+            style={{
+              fontFamily: fonts.secondary
+            }}
+          >
             {review.name}
           </h4>
         </div>

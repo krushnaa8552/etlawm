@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Plus, Trash2, Check } from "lucide-react";
 import { colours, fonts } from "../../theme/theme";
+import CustomSelect from "../CustomSelect";
 import {
   getAddresses,
   addAddress,
@@ -383,28 +384,22 @@ const UserAddress = () => {
                   Locality
                 </label>
 
-                <select
+                <CustomSelect
                   value={formData.locality}
-                  onChange={(e) => updateFormField("locality", e.target.value)}
+                  onChange={(val) => updateFormField("locality", val)}
                   disabled={localities.length === 0}
-                  className="w-full rounded-md border bg-neutral-50 px-3 py-2 text-xs transition-colors focus:border-stone-800 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
-                  style={{ borderColor: colours.border }}
-                >
-                  <option value="">
-                    {localities.length === 0
+                  placeholder={
+                    localities.length === 0
                       ? "Enter PIN first"
-                      : "Select locality"}
-                  </option>
-
-                  {localities.map((locality, index) => (
-                    <option
-                      key={`${locality.name}-${locality.branchType}-${index}`}
-                      value={locality.name}
-                    >
-                      {locality.name}
-                    </option>
-                  ))}
-                </select>
+                      : "Select locality"
+                  }
+                  options={localities.map((locality) => ({
+                    value: locality.name,
+                    label: locality.name,
+                  }))}
+                  inputClassName="w-full rounded-md border bg-neutral-50 px-3 py-2 text-xs transition-colors focus:border-stone-800 focus:outline-none"
+                  optionClassName="px-3 py-2 text-xs"
+                />
               </div>
 
               <div>

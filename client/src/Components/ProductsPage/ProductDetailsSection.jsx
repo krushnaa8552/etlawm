@@ -63,15 +63,15 @@ export default function ProductDetailsSection({
           </div>
 
           <div>
-            <DetailBlock eyebrow="Overview" title="Description">
+            <DetailBlock title="Description">
               <p>{description}</p>
             </DetailBlock>
 
-            <DetailBlock eyebrow="Formula" title="Ingredients">
+            <DetailBlock title="Ingredients">
               <p>{ingredients || "Ingredients are not listed for this product."}</p>
             </DetailBlock>
 
-            <DetailBlock eyebrow="Results" title="Benefits">
+            <DetailBlock title="Benefits">
               {benefits.length ? (
                 <ul className="grid gap-3 pl-5 sm:grid-cols-2">
                   {benefits.map((benefit) => (
@@ -83,12 +83,12 @@ export default function ProductDetailsSection({
               )}
             </DetailBlock>
 
-            <DetailBlock eyebrow="Routine" title="How to use">
+            <DetailBlock title="How to use">
               <p>{usageInstructions || "Usage instructions are not listed for this product."}</p>
             </DetailBlock>
 
             {(concerns.length > 0 || productSize || code) && (
-              <DetailBlock eyebrow="Details" title="Additional information">
+              <DetailBlock title="Additional information">
                 <dl className="grid gap-5 sm:grid-cols-2">
                   {productSize && (
                     <div>

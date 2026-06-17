@@ -17,8 +17,11 @@ export const colours = {
 export const colors = colours;
 
 export const fonts = {
-  logo: " 'Libertinus Sans', sans-serif",
+  // logo: " 'Libertinus Sans', sans-serif",
+  logo: "'Sen', sans-serif",
   font2: " 'Handlee', sans-serif",
-  primary: "'Crimson Text', Georgia, serif",
-  secondary: "'Montserrat', serif",
+  // primary: "'Crimson Text', Georgia, serif",
+  font3: "'Bigshot One', serif",
+  primary: "'Montaga', serif",
+  secondary: "'Montserrat', sans-serif",
 };

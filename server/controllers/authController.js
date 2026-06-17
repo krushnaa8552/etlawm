@@ -149,6 +149,7 @@ const verifyOtp = async (req, res) => {
         last_name: user.last_name,
         onboarding_step: user.onboarding_step,
         is_admin: user.is_admin ?? false,
+        whatsapp_opt_in: user.whatsapp_opt_in,
       },
     });
   } catch (err) {
@@ -195,6 +196,7 @@ const onBoard = async (req, res) => {
         last_name: user.last_name,
         onboarding_step: user.onboarding_step,
         is_admin: user.is_admin ?? false,
+        whatsapp_opt_in: user.whatsapp_opt_in,
       },
     });
   } catch (err) {
@@ -226,6 +228,7 @@ const me = async (req, res) => {
         onboarding_step: user.onboarding_step,
         is_admin: user.is_admin ?? false,
         is_active: user.is_active,
+        whatsapp_opt_in: user.whatsapp_opt_in,
       },
     });
   } catch (err) {

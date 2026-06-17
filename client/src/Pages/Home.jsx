@@ -1,31 +1,39 @@
 import NavBar from "../Components/NavBar2.jsx";
-import ModernCarousel from "../Components/HomePage/Carousel.jsx";
-import Philosophy from "../Components/HomePage/Philosophy.jsx";
-import Footer from "../Components/Footer.jsx";
+import HeroBanner2 from "../Components/HomePage/HeroBanner2.jsx";
+import IngredientsShowcase from "../Components/HomePage/IngredientsShowcase.jsx";
+import FeaturedProducts from "../Components/HomePage/FeaturedProducts.jsx";
+import Philosophy2 from "../Components/HomePage/Philosophy2.jsx";
+import Footer2 from "../Components/Footer2.jsx";
 import ReviewPanel from "../Components/HomePage/ReviewPanel.jsx";
-import { Parallax } from 'react-scroll-parallax';
 
 const Home = () => {
   return (
-    <div className="w-full min-h-screen overflow-x-hidden flex flex-col">
+    <div className="w-full min-h-screen overflow-x-hidden flex flex-col bg-[#F7F3EC]">
+      {/* Retained NavBar */}
       <NavBar />
 
-      <ModernCarousel />
-
+      {/* New Creative Hero Banner */}
+      <HeroBanner2 />
       <br />
 
-      <Parallax speed={10} >
-        <ReviewPanel />
-      </Parallax>
+      {/* Interactive Ingredients Showcase */}
+      <IngredientsShowcase />
 
+      {/* Curated Best Sellers Grid */}
+      <FeaturedProducts />
+
+      {/* Retained ReviewPanel wrapped in Parallax */}
       
-      <br />
-      <Philosophy />
-      <br />
-
+      <ReviewPanel />
       
+
+
+      {/* Remade Philosophy Panel */}
+      <Philosophy2 />
+
+      {/* Remade Footer */}
       <div className="mt-auto">
-        <Footer />
+        <Footer2 />
       </div>
     </div>
   );

@@ -145,7 +145,7 @@ const ReviewPanel = () => {
             className="relative z-10 max-w-[230px] text-4xl font-bold leading-tight"
             style={{
               color: colours.text,
-              fontFamily: fonts.font2,
+              fontFamily: fonts.primary,
             }}
           >
             <p>What our</p>

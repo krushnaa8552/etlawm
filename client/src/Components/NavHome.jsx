@@ -51,7 +51,7 @@ const NavHome = ({
         <Link
           to="/"
           aria-label="ETLAWM home"
-          className="justify-self-center whitespace-nowrap text-[22px] leading-none tracking-[-0.045em] hover:opacity-65 sm:text-[27px]"
+          className="justify-self-center whitespace-nowrap text-[22px] leading-none tracking-[0.085em] hover:opacity-65 sm:text-[27px]"
           style={{
             fontFamily: fonts.logo,
             color: foregroundColor,

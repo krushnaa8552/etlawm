@@ -6,8 +6,7 @@ import './App.css';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './Components/ProtectedRoute';
 import AdminRoute from './Components/AdminPanel/AdminRoute';
-import Home        from './Pages/Home.jsx';
-import Home2       from './Pages/Home2.jsx';
+import Home      from './Pages/Home.jsx';
 import Login       from './Pages/Login2.jsx';
 import Collection from './Pages/Collection.jsx';
 import Cart        from './Pages/Cart.jsx';
@@ -58,9 +57,7 @@ function AppRoutes() {
         <ScrollToTop />
         <Routes>
           <Route path="/scrap" element={<Scrapping />} />
-          <Route path="/"                         element={<Home2 />} />
-          <Route path="/home2"                    element={<Home2 />} />
-          <Route path="/home-old"                 element={<Home />} />
+          <Route path="/"                         element={<Home />} />
           <Route path="/login"                    element={<Login />} />
           {/* Collection routes */}
           <Route path="/collection"               element={<Collection />} />

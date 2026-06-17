@@ -70,8 +70,8 @@ export default function Footer() {
         <div className="flex flex-col lg:flex-row lg:justify-between gap-12">
           {/* Brand block */}
           <div className="max-w-xs">
-            <div className="text-2xl font-bold tracking-widest mb-1" style={{ fontFamily: fonts.primary }}>
-              ETLAWM.
+            <div className="text-2xl font-bold mb-1 tracking-[0.085em]" style={{ fontFamily: fonts.logo }}>
+              ETLAWM
             </div>
             <div className="text-[10px] tracking-[0.3em] text-gray-400 mb-5 uppercase">
               Herbal Rituals

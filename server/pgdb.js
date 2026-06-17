@@ -213,6 +213,7 @@ const users = {
             phone_verified,
             onboarding_step,
             is_admin,
+            whatsapp_opt_in,
             created_at`,
         [
           phone_number ?? null,
@@ -235,7 +236,7 @@ const users = {
     findById: (id) =>
         query(
             `SELECT id, phone_number, email, first_name, last_name,
-                    onboarding_step, is_admin, is_active, last_login_at, created_at
+                    onboarding_step, is_admin, is_active, last_login_at, created_at, whatsapp_opt_in
              FROM users WHERE id = $1 LIMIT 1`,
             [id]
         ),

@@ -6,12 +6,15 @@ import {
 } from "../../services/addressService";
 import {
   ArrowLeft,
+  ChevronDown,
+  ChevronUp,
   Home,
   MapPin,
   Phone,
   User,
 } from "lucide-react";
 import { colours, fonts } from "../../theme/theme";
+import CustomSelect from "../CustomSelect";
 
 function AddressAndDetails({
   addressDetails,
@@ -24,11 +27,25 @@ function AddressAndDetails({
 
   const [savedAddresses, setSavedAddresses] = useState([]);
   const [selectedAddressId, setSelectedAddressId] = useState("");
+  const [showSavedDropdown, setShowSavedDropdown] = useState(false);
   const [localities, setLocalities] = useState([]);
   const [pincodeLoading, setPincodeLoading] = useState(false);
   const [pincodeError, setPincodeError] = useState("");
 
   const lastCheckedPincodeRef = useRef("");
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowSavedDropdown(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     async function loadSavedAddresses() {
@@ -156,10 +173,6 @@ function AddressAndDetails({
   }, [addressDetails.pincode, setAddressDetails]);
 
   function selectAddress(address) {
-    const savedPincode = String(address.pincode || "").trim();
-
-    lastCheckedPincodeRef.current = savedPincode;
-
     setSelectedAddressId(address.id);
     setPincodeError("");
     setLocalities([]);
@@ -168,11 +181,11 @@ function AddressAndDetails({
     setAddressDetails((current) => ({
       ...current,
       addressLine: address.line1 || "",
-      city: address.city || "",
-      state: address.state || "",
-      pincode: savedPincode,
-      locality: address.locality || "",
-      pincodeVerified: true,
+      city: "",
+      state: "",
+      pincode: "",
+      locality: "",
+      pincodeVerified: false,
       fullName:
         current.fullName ||
         (user
@@ -269,48 +282,59 @@ function AddressAndDetails({
         }}
       >
         {savedAddresses.length > 0 && (
-          <div
-            className="mb-6 rounded-2xl border bg-white p-4"
-            style={{ borderColor: colours.border }}
-          >
-            <label
-              className="mb-2 block text-sm font-semibold"
+          <div ref={dropdownRef} className="relative mb-6">
+            <button
+              type="button"
+              onClick={() => setShowSavedDropdown(!showSavedDropdown)}
+              className="flex items-center gap-1.5 text-sm font-semibold outline-none cursor-pointer"
               style={{
                 color: colours.text,
                 fontFamily: fonts.secondary,
               }}
             >
-              Select from saved addresses
-            </label>
+              <span>Select from saved addresses</span>
+              {showSavedDropdown ? (
+                <ChevronUp size={16} className="opacity-60" />
+              ) : (
+                <ChevronDown size={16} className="opacity-60" />
+              )}
+            </button>
 
-            <select
-              value={selectedAddressId}
-              onChange={(event) => {
-                const address = savedAddresses.find(
-                  (item) => String(item.id) === String(event.target.value),
-                );
-
-                if (address) {
-                  selectAddress(address);
-                }
-              }}
-              className="h-12 w-full rounded-xl border bg-neutral-50 px-4 text-sm outline-none"
-              style={{
-                borderColor: colours.border,
-                color: colours.text,
-                fontFamily: fonts.secondary,
-              }}
-            >
-              <option value="">-- Select a saved address --</option>
-
-              {savedAddresses.map((address) => (
-                <option key={address.id} value={address.id}>
-                  {address.line1}, {address.city}, {address.state} -{" "}
-                  {address.pincode}
-                  {address.is_default ? " (Default)" : ""}
-                </option>
-              ))}
-            </select>
+            {showSavedDropdown && (
+              <div
+                className="absolute left-0 z-50 mt-2 w-full max-w-md rounded-xl border bg-white py-1 shadow-lg max-h-60 overflow-y-auto"
+                style={{
+                  borderColor: colours.border,
+                  fontFamily: fonts.secondary,
+                }}
+              >
+                {savedAddresses.map((address) => (
+                  <button
+                    key={address.id}
+                    type="button"
+                    onClick={() => {
+                      selectAddress(address);
+                      setShowSavedDropdown(false);
+                    }}
+                    className="w-full px-4 py-3 text-left text-sm transition-colors hover:bg-neutral-50 flex flex-col gap-0.5 border-b last:border-b-0 cursor-pointer"
+                    style={{
+                      borderColor: colours.border,
+                      color: colours.text,
+                    }}
+                  >
+                    <span className="font-semibold text-[10px] uppercase tracking-wider opacity-50">
+                      {address.is_default ? "Default Address" : "Saved Address"}
+                    </span>
+                    <span className="font-medium text-neutral-800">
+                      {address.line1}
+                    </span>
+                    <span className="text-xs text-neutral-500">
+                      {address.city}, {address.state} - {address.pincode}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
@@ -405,29 +429,20 @@ function AddressAndDetails({
               Locality
             </span>
 
-            <select
+            <CustomSelect
               value={addressDetails.locality || ""}
-              onChange={(event) => updateField("locality", event.target.value)}
+              onChange={(value) => updateField("locality", value)}
               disabled={localities.length === 0}
-              className="h-12 w-full rounded-xl border bg-transparent px-4 text-sm outline-none disabled:cursor-not-allowed disabled:opacity-60"
-              style={{
-                borderColor: colours.border,
-                color: colours.text,
-                fontFamily: fonts.secondary,
-              }}
-            >
-              <option value="">
-                {localities.length === 0
+              placeholder={
+                localities.length === 0
                   ? "Enter PIN code first"
-                  : "Select locality"}
-              </option>
-
-              {localities.map((locality) => (
-                <option key={locality.name} value={locality.name}>
-                  {locality.name}
-                </option>
-              ))}
-            </select>
+                  : "Select locality"
+              }
+              options={localities.map((locality) => ({
+                value: locality.name,
+                label: locality.name,
+              }))}
+            />
           </label>
 
           <InputField
@@ -469,21 +484,14 @@ function AddressAndDetails({
               Delivery type
             </span>
 
-            <select
+            <CustomSelect
               value={addressDetails.deliveryType}
-              onChange={(event) =>
-                updateField("deliveryType", event.target.value)
-              }
-              className="h-12 w-full rounded-xl border bg-transparent px-4 text-sm outline-none"
-              style={{
-                borderColor: colours.border,
-                color: colours.text,
-                fontFamily: fonts.secondary,
-              }}
-            >
-              <option value="standard">Standard delivery</option>
-              <option value="express">Express delivery</option>
-            </select>
+              onChange={(value) => updateField("deliveryType", value)}
+              options={[
+                { value: "standard", label: "Standard delivery" },
+                { value: "express", label: "Express delivery" },
+              ]}
+            />
           </label>
         </div>
 

@@ -1,5 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import HomepageContent from "../Components/AdminPanel/AdminContent/CMSHomePage.jsx";
+import CMSHomepageReviews from "../Components/AdminPanel/AdminContent/CMSHomepageReviews.jsx";
 import ReviewContent from "../Components/AdminPanel/AdminContent/CMSReview.jsx";
 import CMSReviewForm from "../Components/AdminPanel/AdminContent/CMSReviewForm.jsx";
 import ProductReviews from "../Components/AdminPanel/AdminContent/ProductReviews.jsx";
@@ -125,6 +126,7 @@ const AdminDashBoard = () => {
 
             {/* Content Group */}
             <Route path="/content/homepage" element={<HomepageContent />} />
+            <Route path="/content/homepage/reviews" element={<CMSHomepageReviews />} />
             <Route path="/content/reviews" element={<ReviewContent />} />
             <Route path="/content/reviews/add-review" element={<CMSReviewForm />} />
             <Route path="/content/reviews/edit/:id" element={<CMSReviewForm />} />

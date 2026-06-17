@@ -9,7 +9,7 @@
 
 import crypto from 'crypto';
 import bcrypt from 'bcrypt';
-import * as wa from '../scrap.js';
+import * as wa from './whatsappService.js';
 
 const OTP_LENGTH = 6;
 const BCRYPT_ROUNDS = 10;

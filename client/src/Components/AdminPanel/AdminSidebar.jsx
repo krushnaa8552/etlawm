@@ -359,6 +359,11 @@ const SidebarButton = ({ item, isActive, isExpanded, onClick }) => {
 
 const SidebarNavLink = ({ to, label, icon, end }) => {
   const [hovered, setHovered] = useState(false);
+  const location = useLocation();
+
+  const customIsActive = end
+    ? location.pathname === to
+    : (location.pathname === to || location.pathname.startsWith(to + "/"));
 
   return (
     <NavLink
@@ -367,13 +372,13 @@ const SidebarNavLink = ({ to, label, icon, end }) => {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       className="px-3 py-3 rounded-lg text-sm font-medium flex items-center gap-3 transition-all duration-200 no-underline w-full"
-      style={({ isActive }) => ({
-        backgroundColor: isActive
+      style={() => ({
+        backgroundColor: customIsActive
           ? colours.accent
           : hovered
             ? colours.surface
             : "transparent",
-        color: isActive
+        color: customIsActive
           ? colours.background
           : hovered
             ? colours.secondary
@@ -381,8 +386,8 @@ const SidebarNavLink = ({ to, label, icon, end }) => {
         fontFamily: fonts.secondary,
       })}
     >
-      {({ isActive }) => {
-        const foregroundColor = isActive
+      {() => {
+        const foregroundColor = customIsActive
           ? colours.background
           : hovered
             ? colours.secondary
@@ -487,7 +492,9 @@ const AdminSidebar = () => {
       if (!item.children) return;
 
       const isChildActive = item.children.some(
-        (child) => location.pathname === child.path,
+        (child) =>
+          location.pathname === child.path ||
+          location.pathname.startsWith(child.path + "/"),
       );
 
       if (isChildActive && !expandedSections[item.label]) {
@@ -514,7 +521,9 @@ const AdminSidebar = () => {
 
     if (hasChildren) {
       const isAnyChildActive = item.children.some(
-        (child) => location.pathname === child.path,
+        (child) =>
+          location.pathname === child.path ||
+          location.pathname.startsWith(child.path + "/"),
       );
 
       return (

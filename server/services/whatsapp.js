@@ -1,4 +1,4 @@
-const axios = require("axios");
+import axios from 'axios';
 
 const ACCESS_TOKEN = process.env.ACCESS_TOKEN;
 const PHONE_NUMBER_ID = process.env.PHONE_NUMBER_ID;

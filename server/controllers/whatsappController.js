@@ -1,6 +1,6 @@
 import axios from "axios";
-import * as db from "../pgdb.js";
-import * as wa from "../scrap.js";
+import db from "../pgdb.js";
+import * as wa from "../services/whatsappService.js";
 import { askGemini } from "../gemini.js";
 import { getHistory, saveMessage } from "../chatMemory.js";
 

@@ -235,7 +235,7 @@ export default function Collection() {
           style={{
             maxWidth: "1320px",
             margin: "0 auto",
-            padding: "48px 24px 0",
+            padding: "8px 24px 0",
           }}
         >
           <Breadcrumb />

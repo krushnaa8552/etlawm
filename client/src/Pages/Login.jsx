@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useGoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../context/AuthContext';
 import { colours, fonts } from '../theme/theme.js';
+import CustomSelect from '../Components/CustomSelect';
 
 const API = import.meta.env.VITE_SERVER_API;
 
@@ -368,25 +369,20 @@ const Login = () => {
                                 <label className={LABEL_CLS} style={{ fontFamily: fonts.primary, color: colours.mutedText }}>Mobile Number</label>
                                 <div className="flex gap-2">
                                     {/* Country code */}
-                                    <select
+                                    <CustomSelect
                                         value={cc}
-                                        onChange={e => setCc(e.target.value)}
-                                        id="country-code"
-                                        className="border px-2 py-[11px] text-[13px] outline-none transition-all duration-200 cursor-pointer min-w-[72px]"
-                                        style={{
-                                            fontFamily: fonts.secondary,
-                                            background: colours.background,
-                                            borderColor: colours.border,
-                                            color: colours.text,
-                                        }}
-                                    >
-                                        <option value="+91">🇮🇳 +91</option>
-                                        <option value="+1">🇺🇸 +1</option>
-                                        <option value="+44">🇬🇧 +44</option>
-                                        <option value="+971">🇦🇪 +971</option>
-                                        <option value="+65">🇸🇬 +65</option>
-                                        <option value="+61">🇦🇺 +61</option>
-                                    </select>
+                                        onChange={(val) => setCc(val)}
+                                        options={[
+                                            { value: "+91", label: "🇮🇳 +91" },
+                                            { value: "+1", label: "🇺🇸 +1" },
+                                            { value: "+44", label: "🇬🇧 +44" },
+                                            { value: "+971", label: "🇦🇪 +971" },
+                                            { value: "+65", label: "🇸🇬 +65" },
+                                            { value: "+61", label: "🇦🇺 +61" },
+                                        ]}
+                                        inputClassName="border px-2 py-[11px] text-[13px] outline-none transition-all duration-200 cursor-pointer min-w-[84px] h-auto rounded-none"
+                                        optionClassName="px-3 py-2 text-[13px]"
+                                    />
                                     {/* Phone */}
                                     <LoginInput
                                         id="phone"

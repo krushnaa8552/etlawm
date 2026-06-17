@@ -1,6 +1,9 @@
 import SectionCard from "../../SectionCard";
+import { useNavigate } from "react-router-dom";
 
 const HomepageContent = () => {
+  const navigate = useNavigate();
+  
   const cards = [
     {
       title: "Carousel",
@@ -28,7 +31,7 @@ const HomepageContent = () => {
             key={card.title}
             title={card.title}
             description={card.description}
-            onClick={() => console.log(`${card.title} clicked`)}
+            onClick={() => navigate(`/admin/content/homepage/${card.title.toLowerCase()}`)}
           />
         ))}
       </div>

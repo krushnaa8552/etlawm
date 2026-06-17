@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { CONCERNS, SORT_OPTIONS } from "../../data/products.js";
 import { getCategories } from "../../services/categoryService.js";
 import { colours, fonts } from "../../theme/theme.js";
+import CustomSelect from "../CustomSelect";
 
 const INK = colours.text;
 const BARK = colours.accent;
@@ -190,34 +191,25 @@ export function FilterContent({ filters, setFilters }) {
       {/* Sort */}
       <SectionLabel>Sort by</SectionLabel>
 
-      <select
-        className="filter-select"
+      <CustomSelect
         value={filters.sort}
-        onChange={(e) =>
+        onChange={(val) =>
           setFilters((prev) => ({
             ...prev,
-            sort: e.target.value,
+            sort: val,
           }))
         }
-        style={{
-          fontFamily: fonts.secondary,
-          fontSize: "0.78rem",
+        options={SORT_OPTIONS.map((opt) => ({
+          value: opt.value,
+          label: opt.label,
+        }))}
+        inputClassName="w-full border bg-transparent py-[9px] px-[12px] text-[0.78rem] outline-none cursor-pointer rounded-[2px]"
+        optionClassName="px-[12px] py-[9px] text-[0.78rem]"
+        inputStyle={{
+          borderColor: "rgba(199,165,138,0.35)",
           color: INK,
-          background: "transparent",
-          border: "1px solid rgba(199,165,138,0.35)",
-          borderRadius: "2px",
-          padding: "9px 12px",
-          width: "100%",
-          cursor: "pointer",
-          outline: "none",
         }}
-      >
-        {SORT_OPTIONS.map((opt) => (
-          <option key={opt.value} value={opt.value}>
-            {opt.label}
-          </option>
-        ))}
-      </select>
+      />
 
       <Divider />
 

@@ -3,6 +3,7 @@ import { useGoogleLogin } from '@react-oauth/google';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { colours, fonts } from '../theme/theme.js';
+import CustomSelect from '../Components/CustomSelect';
 
 const API = import.meta.env.VITE_SERVER_API;
 
@@ -551,25 +552,20 @@ export default function Login() {
                 </label>
 
                 <div className="flex gap-2">
-                  <select
-                    id="country-code"
+                  <CustomSelect
                     value={countryCode}
-                    onChange={(event) => setCountryCode(event.target.value)}
-                    className="min-w-[88px] rounded-xl border px-3 py-3 text-[13px] outline-none transition-colors duration-200"
-                    style={{
-                      fontFamily: fonts.secondary,
-                      background: colours.background,
-                      borderColor: colours.border,
-                      color: colours.text,
-                    }}
-                  >
-                    <option value="+91">IN +91</option>
-                    <option value="+1">US +1</option>
-                    <option value="+44">UK +44</option>
-                    <option value="+971">AE +971</option>
-                    <option value="+65">SG +65</option>
-                    <option value="+61">AU +61</option>
-                  </select>
+                    onChange={(val) => setCountryCode(val)}
+                    options={[
+                      { value: "+91", label: "IN +91" },
+                      { value: "+1", label: "US +1" },
+                      { value: "+44", label: "UK +44" },
+                      { value: "+971", label: "AE +971" },
+                      { value: "+65", label: "SG +65" },
+                      { value: "+61", label: "AU +61" },
+                    ]}
+                    inputClassName="min-w-[100px] rounded-xl border px-3 py-3 text-[13px] outline-none transition-colors duration-200 cursor-pointer"
+                    optionClassName="px-3 py-2 text-[13px]"
+                  />
 
                   <div className="flex-1">
                     <LoginInput

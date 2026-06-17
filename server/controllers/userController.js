@@ -83,6 +83,7 @@ const login = async (req, res) => {
         last_name: user.last_name,
         email: user.email,
         is_admin: user.is_admin ?? false,
+        whatsapp_opt_in: user.whatsapp_opt_in,
       },
     });
   } catch (err) {
@@ -183,6 +184,7 @@ const updateProfile = async (req, res) => {
         onboarding_step: updatedUser.onboarding_step,
         is_admin: updatedUser.is_admin ?? false,
         is_active: updatedUser.is_active,
+        whatsapp_opt_in: updatedUser.whatsapp_opt_in,
       }
     });
   } catch (err) {
