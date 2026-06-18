@@ -8,7 +8,9 @@ import HomeSupport from "../Components/HomePage/HomeSupport.jsx";
 import HomeQuestions from "../Components/HomePage/HomeQuestions.jsx";
 import HomeFinalCTA from "../Components/HomePage/HomeFinalCTA.jsx";
 import HomeFooter from "../Components/HomePage/HomeFooter.jsx";
+import Footer from "../Components/Footer.jsx";
 import Philosophy from "../Components/HomePage/Philosophy3.jsx";
+import ProductPanel from "../Components/HomePage/ProductPanel.jsx";
 
 const Home = () => {
   return (
@@ -17,17 +19,18 @@ const Home = () => {
 
       <main>
         <HomeHero />
-        <HomeDirections />
-        <Philosophy />
-        <HomePathways />
+        {/* <HomeDirections />*/}
+        {/* <HomePathways />*/}
+        <ProductPanel />
         <HomePrinciples />
-        <HomeInsights />
+        <Philosophy />
+        {/* <HomeInsights />*/}
         <HomeSupport />
         <HomeQuestions />
-        <HomeFinalCTA />
+        {/* <HomeFinalCTA />*/}
       </main>
 
-      <HomeFooter />
+      <Footer />
     </div>
   );
 };

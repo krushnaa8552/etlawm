@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import ScrollToTop from './Components/ScrollToTop.jsx';
 import Lenis from 'lenis';
@@ -6,7 +6,7 @@ import './App.css';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './Components/ProtectedRoute';
 import AdminRoute from './Components/AdminPanel/AdminRoute';
-import Home      from './Pages/Home.jsx';
+import Home      from './Pages/Home2.jsx';
 import Login       from './Pages/Login2.jsx';
 import Collection from './Pages/Collection.jsx';
 import Cart        from './Pages/Cart.jsx';
@@ -19,6 +19,7 @@ import Scrapping from './Scrapping/Scrapping.jsx';
 import OrderSuccess from './Pages/OrderSuccess.jsx';
 import { useAuth } from './context/AuthContext';
 import Loader from './Components/Loader';
+import FloatingCart from './Components/FloatingCart.jsx';
 
 function AppRoutes() {
   const { loading } = useAuth();
@@ -97,6 +98,7 @@ function AppRoutes() {
             }
           />
         </Routes>
+        <FloatingCart />
       </>
   );
 }

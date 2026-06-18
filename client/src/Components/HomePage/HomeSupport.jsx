@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { colours, fonts } from "../../theme/theme.js";
 
 const cards = [
   {
@@ -27,53 +28,55 @@ const LineIcon = () => {
         width="100"
         height="64"
         rx="4"
-        fill="#F7F3EC"
-        stroke="#171715"
+        fill={colours.primary}
+        stroke={colours.secondary}
         strokeWidth="2"
       />
       <path
         d="M58 57H122M58 72H107M58 87H118"
-        stroke="#171715"
+        stroke={colours.secondary}
         strokeWidth="1.5"
         strokeLinecap="round"
       />
       <path
         d="M90 25C106 16 122 18 134 31"
-        stroke="#171715"
+        stroke={colours.secondary}
         strokeWidth="1.4"
         strokeLinecap="round"
         strokeDasharray="4 6"
       />
-      <circle cx="141" cy="38" r="8" fill="#C94131" stroke="#171715" />
+      <circle cx="141" cy="38" r="8" fill={colours.accent} stroke={colours.secondary} />
     </svg>
   );
 };
 
 const HomeSupport = () => {
   return (
-    <section className="bg-[#F8E4DD] px-5 py-20 md:px-10 lg:px-16">
+    <section className="px-5 py-20 md:px-10 lg:px-16" style={{ backgroundColor: colours.surface }}>
       <div className="mx-auto grid max-w-6xl gap-6 md:grid-cols-2">
         {cards.map((card) => (
           <article
             key={card.title}
-            className="bg-[#FFFDF8] p-8 text-center shadow-[0_18px_70px_rgba(23,23,21,0.08)] md:p-12"
+            className="p-8 text-center shadow-[0_18px_70px_rgba(23,23,21,0.08)] md:p-12"
+            style={{ backgroundColor: colours.primary }}
           >
             <LineIcon />
 
             <h2
               className="mx-auto max-w-md text-4xl font-normal leading-none tracking-[-0.04em] md:text-5xl"
-              style={{ fontFamily: "'Crimson Text', Georgia, serif" }}
+              style={{ fontFamily: fonts.primary, color: colours.secondary }}
             >
               {card.title}
             </h2>
 
-            <p className="mx-auto mt-5 max-w-md text-sm leading-7 text-[#171715]/70">
+            <p className="mx-auto mt-5 max-w-md text-sm leading-7" style={{ color: `${colours.secondary}b3`, fontFamily: fonts.secondary }}>
               {card.text}
             </p>
 
             <Link
               to={card.href}
-              className="mt-7 inline-flex rounded-full bg-[#68B7AA] px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.16em] text-white transition hover:bg-[#579f94]"
+              className="mt-7 inline-flex rounded-full px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.16em] transition"
+              style={{ backgroundColor: colours.accent, color: colours.primary, fontFamily: fonts.secondary }}
             >
               Start now
             </Link>

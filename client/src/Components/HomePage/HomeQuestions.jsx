@@ -1,138 +1,213 @@
+import { colours, fonts } from "../../theme/theme.js";
+
+const palette = {
+  primary: colours.primary || "#F7F3EC",
+  background: colours.background || "#FFFFFF",
+  secondary: colours.secondary || colours.text || "#171715",
+  accent: colours.accent || "#A77C6B",
+  border: colours.border || "#D8D2C8",
+  muted: colours.mutedText || "#7C7770",
+  surface: colours.surface || "#E8E2D8",
+};
+
 const HomeQuestions = () => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+  };
+
   return (
-    <section className="bg-[#F7F3EC] px-5 py-24 md:px-10 lg:px-16">
-      <div className="mx-auto grid max-w-6xl gap-12 md:grid-cols-[0.9fr_1.1fr] md:items-start">
-        <div>
-          <p className="mb-4 text-xs uppercase tracking-[0.32em] text-[#68B7AA]">
+    <section
+      className="relative overflow-hidden px-5 py-24 md:px-10 lg:px-16"
+      style={{
+        backgroundColor: palette.primary,
+        color: palette.secondary,
+      }}
+    >
+      <div className="pointer-events-none absolute inset-0">
+        <p
+          className="absolute -right-8 top-10 hidden select-none text-[10rem] font-normal leading-none tracking-[-0.08em] opacity-[0.035] xl:block"
+          style={{
+            fontFamily: fonts.primary,
+            color: palette.secondary,
+          }}
+        >
+          ASK
+        </p>
+
+        <div
+          className="absolute bottom-0 left-0 h-[320px] w-[320px] rounded-full blur-3xl"
+          style={{
+            backgroundColor: `${palette.accent}24`,
+          }}
+        />
+      </div>
+
+      <div className="relative mx-auto max-w-5xl">
+        <div
+          className="mb-12 border-y py-10 text-center"
+          style={{
+            borderColor: `${palette.secondary}24`,
+          }}
+        >
+          <p
+            className="mb-4 text-xs font-semibold uppercase tracking-[0.34em]"
+            style={{
+              color: palette.accent,
+              fontFamily: fonts.secondary,
+            }}
+          >
             Questions
           </p>
 
           <h2
-            className="text-5xl font-normal leading-[0.9] tracking-[-0.06em] md:text-7xl"
-            style={{ fontFamily: "'Crimson Text', Georgia, serif" }}
+            className="mx-auto max-w-4xl text-[clamp(3.5rem,7vw,7.5rem)] font-normal leading-[0.82] tracking-[-0.08em]"
+            style={{
+              fontFamily: fonts.primary,
+            }}
           >
             Have any questions?
           </h2>
 
-          <form className="mt-10 space-y-5">
-            <input
-              type="text"
-              placeholder="Name"
-              className="w-full border-0 border-b border-[#171715]/35 bg-transparent px-0 py-3 text-sm outline-none placeholder:text-[#171715]/45 focus:border-[#171715]"
-            />
-
-            <input
-              type="email"
-              placeholder="Email"
-              className="w-full border-0 border-b border-[#171715]/35 bg-transparent px-0 py-3 text-sm outline-none placeholder:text-[#171715]/45 focus:border-[#171715]"
-            />
-
-            <input
-              type="text"
-              placeholder="Subject"
-              className="w-full border-0 border-b border-[#171715]/35 bg-transparent px-0 py-3 text-sm outline-none placeholder:text-[#171715]/45 focus:border-[#171715]"
-            />
-
-            <textarea
-              placeholder="Message"
-              rows="4"
-              className="w-full resize-none border-0 border-b border-[#171715]/35 bg-transparent px-0 py-3 text-sm outline-none placeholder:text-[#171715]/45 focus:border-[#171715]"
-            />
-
-            <button
-              type="submit"
-              className="rounded-full bg-[#68B7AA] px-6 py-3 text-xs font-semibold uppercase tracking-[0.16em] text-white transition hover:bg-[#579f94]"
-            >
-              Send message
-            </button>
-          </form>
-
-          <p className="mt-5 max-w-md text-xs leading-6 text-[#171715]/50">
-            This is only the frontend form. Connect it to your backend contact
-            API when that route is ready.
+          <p
+            className="mx-auto mt-6 max-w-xl text-sm leading-7 md:text-base"
+            style={{
+              color: palette.muted,
+              fontFamily: fonts.secondary,
+            }}
+          >
+            Send a message and keep it direct. This section is only the frontend
+            form until your contact API is connected.
           </p>
         </div>
 
-        <div className="flex justify-center">
-          <div className="relative w-full max-w-md bg-[#FFF7E7] p-10 shadow-[0_22px_80px_rgba(23,23,21,0.08)]">
-            <svg
-              viewBox="0 0 420 520"
-              className="h-auto w-full"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M132 175C132 145 155 125 188 125H231C264 125 288 145 288 175V411C288 441 264 461 231 461H188C155 461 132 441 132 411V175Z"
-                fill="#F7F3EC"
-                stroke="#171715"
-                strokeWidth="3"
-              />
-              <path
-                d="M158 198H262M158 225H262M158 252H262"
-                stroke="#171715"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-              <path
-                d="M176 317C200 300 226 300 250 317"
-                stroke="#171715"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-              <path
-                d="M126 169H294"
-                stroke="#171715"
-                strokeWidth="3"
-                strokeLinecap="round"
-              />
-              <path
-                d="M188 124C192 93 209 72 240 62C274 51 304 63 330 92"
-                stroke="#171715"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-              <path
-                d="M246 60C247 97 226 123 189 137"
-                stroke="#171715"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-              <path
-                d="M248 59C279 84 291 113 284 145"
-                stroke="#171715"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-              <path
-                d="M109 469C161 451 239 450 312 469"
-                stroke="#171715"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeDasharray="5 8"
-              />
-              <text
-                x="210"
-                y="368"
-                textAnchor="middle"
-                fill="#171715"
-                fontFamily="Georgia, serif"
-                fontSize="32"
+        <form
+          onSubmit={handleSubmit}
+          className="mx-auto max-w-3xl rounded-[2rem] border p-6 shadow-[0_24px_90px_rgba(23,23,21,0.07)] md:p-10"
+          style={{
+            borderColor: `${palette.secondary}20`,
+            backgroundColor: `${palette.background}cc`,
+          }}
+        >
+          <div className="grid gap-6 md:grid-cols-2">
+            <div>
+              <label
+                htmlFor="name"
+                className="mb-3 block text-[11px] font-semibold uppercase tracking-[0.22em]"
+                style={{
+                  color: palette.accent,
+                  fontFamily: fonts.secondary,
+                }}
               >
-                Questions
-              </text>
-              <text
-                x="210"
-                y="398"
-                textAnchor="middle"
-                fill="#171715"
-                fontFamily="Georgia, serif"
-                fontSize="24"
+                Name
+              </label>
+
+              <input
+                id="name"
+                type="text"
+                placeholder="Your name"
+                className="w-full rounded-none border-0 border-b bg-transparent px-0 py-3 text-sm outline-none transition placeholder:text-[#171715]/40 focus:border-[#171715]"
+                style={{
+                  borderBottomColor: `${palette.secondary}45`,
+                  color: palette.secondary,
+                  fontFamily: fonts.secondary,
+                }}
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="email"
+                className="mb-3 block text-[11px] font-semibold uppercase tracking-[0.22em]"
+                style={{
+                  color: palette.accent,
+                  fontFamily: fonts.secondary,
+                }}
               >
-                Jar
-              </text>
-            </svg>
+                Email
+              </label>
+
+              <input
+                id="email"
+                type="email"
+                placeholder="Your email"
+                className="w-full rounded-none border-0 border-b bg-transparent px-0 py-3 text-sm outline-none transition placeholder:text-[#171715]/40 focus:border-[#171715]"
+                style={{
+                  borderBottomColor: `${palette.secondary}45`,
+                  color: palette.secondary,
+                  fontFamily: fonts.secondary,
+                }}
+              />
+            </div>
           </div>
-        </div>
+
+          <div className="mt-6">
+            <label
+              htmlFor="subject"
+              className="mb-3 block text-[11px] font-semibold uppercase tracking-[0.22em]"
+              style={{
+                color: palette.accent,
+                fontFamily: fonts.secondary,
+              }}
+            >
+              Subject
+            </label>
+
+            <input
+              id="subject"
+              type="text"
+              placeholder="What is this about?"
+              className="w-full rounded-none border-0 border-b bg-transparent px-0 py-3 text-sm outline-none transition placeholder:text-[#171715]/40 focus:border-[#171715]"
+              style={{
+                borderBottomColor: `${palette.secondary}45`,
+                color: palette.secondary,
+                fontFamily: fonts.secondary,
+              }}
+            />
+          </div>
+
+          <div className="mt-6">
+            <label
+              htmlFor="message"
+              className="mb-3 block text-[11px] font-semibold uppercase tracking-[0.22em]"
+              style={{
+                color: palette.accent,
+                fontFamily: fonts.secondary,
+              }}
+            >
+              Message
+            </label>
+
+            <textarea
+              id="message"
+              placeholder="Write your message"
+              rows="5"
+              className="w-full resize-none rounded-none border-0 border-b bg-transparent px-0 py-3 text-sm outline-none transition placeholder:text-[#171715]/40 focus:border-[#171715]"
+              style={{
+                borderBottomColor: `${palette.secondary}45`,
+                color: palette.secondary,
+                fontFamily: fonts.secondary,
+              }}
+            />
+          </div>
+
+          <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            
+              {/* Frontend only. Add your backend call inside `handleSubmit` when
+              the contact route is ready.*/}
+
+            <button
+              type="submit"
+              className="rounded-full px-7 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-white transition hover:-translate-y-0.5"
+              style={{
+                backgroundColor: palette.accent,
+                fontFamily: fonts.secondary,
+                boxShadow: `0 14px 34px ${palette.accent}33`,
+              }}
+            >
+              Send message
+            </button>
+          </div>
+        </form>
       </div>
     </section>
   );

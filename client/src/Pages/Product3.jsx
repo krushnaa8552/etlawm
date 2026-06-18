@@ -4,10 +4,10 @@ import NavBar from "../Components/NavBar2.jsx";
 import Footer from "../Components/Footer.jsx";
 import { getProductBySlug } from "../services/productService.js";
 import { colours, fonts } from "../theme/theme.js";
-import useCartQuantity from "../hooks/useCartQuantity.js";
 import ProductImageGallery from "../Components/ProductsPage/ProductImageGallery.jsx";
 import ProductPurchasePanel from "../Components/ProductsPage/ProductPurchasePanel.jsx";
 import ProductDetailsSection from "../Components/ProductsPage/ProductDetailsSection.jsx";
+import { ArrowLeft } from "lucide-react";
 
 const API = import.meta.env.VITE_SERVER_API;
 
@@ -77,12 +77,10 @@ export default function Product() {
   const [notFound, setNotFound] = useState(false);
   const [added, setAdded] = useState(false);
 
-  const {
-    quantity,
-    setQuantity,
-    increase,
-    decrease,
-  } = useCartQuantity(product?.id);
+  const [quantity, setQuantity] = useState(1);
+
+  const increase = () => setQuantity((q) => q + 1);
+  const decrease = () => setQuantity((q) => Math.max(1, q - 1));
 
   useEffect(() => {
     let cancelled = false;
@@ -93,6 +91,7 @@ export default function Product() {
       setNotFound(false);
       setProduct(null);
       setImages([]);
+      setQuantity(1);
 
       try {
         const found = await getProductBySlug(slug);
@@ -250,18 +249,52 @@ export default function Product() {
 
   function handleAddToCart() {
     if (isUnavailable || added) return;
-    if (quantity === 0) setQuantity(1);
     setAdded(true);
+    setQuantity(1);
     window.setTimeout(() => setAdded(false), 2500);
   }
+
+  const categorySlug = product.category;
+  const isUncategorized = !categorySlug || categorySlug === "uncategorized";
+  const backPath = isUncategorized ? "/collection" : `/collection/${categorySlug}`;
+  const categoryName = isUncategorized
+    ? "Collection"
+    : (product.subtitle || product.categoryName || product.category_name || "Products");
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: colours.background }}>
       <NavBar />
 
       <main className="pt-24">
+        {/* Back Button */}
+        <div className="mx-auto max-w-[1260px] px-6 pt-6 pb-2">
+          <button
+            type="button"
+            onClick={() => navigate(backPath)}
+            className="group flex items-center gap-1.5 text-[0.72rem] uppercase tracking-[0.2em] cursor-pointer"
+            style={{
+              color: colours.accent,
+              fontFamily: fonts.secondary,
+              transition: "color 0.2s ease-in-out",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = colours.text;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = colours.accent;
+            }}
+          >
+            <ArrowLeft 
+              size={14} 
+              className="transition-transform group-hover:-translate-x-1" 
+              style={{ strokeWidth: 2 }}
+            />
+            <span>Back to {categoryName}</span>
+          </button>
+        </div>
+
         <nav
-          className="mx-auto flex max-w-[1260px] items-center gap-2 overflow-hidden px-6 py-6 text-xs"
+          className="mx-auto flex max-w-[1260px] items-center gap-2 overflow-hidden px-6 pt-2 pb-6 text-xs"
           style={{ color: colours.accent, fontFamily: fonts.secondary }}
         >
           <button type="button" onClick={() => navigate("/")}>Home</button>

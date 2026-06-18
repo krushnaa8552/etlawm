@@ -11,7 +11,7 @@ html {
 }
 
 ::selection {
-  background-color: #e8e2d8;
+  background-color:rgba(232, 226, 216, 0.55);
   color: #7c7770;
 }
 

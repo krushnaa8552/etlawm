@@ -34,7 +34,7 @@ export const CONCERNS = [
   { value: "dandruff",  label: "Dandruff"  },
   { value: "acne",      label: "Acne"      },
   { value: "glow",      label: "Glow"      },
-  { value: "dryness",   label: "Dryness"   },
+  { value: "dryness", label: "Dryness" },
 ];
 
 /** Sort dropdown options for the collection grid. */

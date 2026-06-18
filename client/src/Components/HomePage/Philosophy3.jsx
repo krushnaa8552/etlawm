@@ -1,271 +1,267 @@
 import { forwardRef } from "react";
 import { Link } from "react-router-dom";
+import treeImg from "../../assets/tree.png";
+import { colours, fonts } from "../../theme/theme.js";
+
+const palette = {
+  cream: colours.primary || "#F7F3EC",
+  paper: colours.background || "#FFFFFF",
+  ink: colours.secondary || colours.text || "#171715",
+  accent: colours.accent || "#A77C6B",
+  surface: colours.surface || "#E8E2D8",
+  border: colours.border || "#D8D2C8",
+  muted: colours.mutedText || "#7C7770",
+  hover: colours.hover || "#C8B9A4",
+};
 
 const principles = [
   {
     number: "01",
-    title: "Fewer ingredients",
+    label: "The root",
+    title: "Begin with what belongs.",
     description:
-      "Every ingredient must earn its place. Nothing unnecessary, nothing added only to make the label look impressive.",
+      "Every formula starts with restraint. We keep the ingredients that serve the skin and remove the ones that only add noise.",
   },
   {
     number: "02",
-    title: "Nature, refined",
+    label: "The formula",
+    title: "Let nature stay practical.",
     description:
-      "We keep the strength of botanicals, then refine them into formulas that feel practical for everyday use.",
+      "Botanical care should not feel complicated. We refine plant-led ingredients into products that fit naturally into daily use.",
   },
   {
     number: "03",
-    title: "Results over trends",
+    label: "The rhythm",
+    title: "Care should be repeatable.",
     description:
-      "Our products are built around steady care, clear purpose, and consistency rather than temporary attention.",
+      "A good ritual is not about doing more. It is about returning to a few dependable steps with consistency.",
   },
 ];
-
-const PhilosophySketch = () => {
-  return (
-    <div className="relative aspect-[1.15/1] w-full overflow-hidden bg-[#FFF8EA] shadow-[0_20px_80px_rgba(23,23,21,0.08)]">
-      <svg
-        viewBox="0 0 520 460"
-        className="absolute inset-0 h-full w-full"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <rect width="520" height="460" fill="#FFF8EA" />
-
-        <path
-          d="M68 365C129 327 201 317 275 339C354 363 420 354 474 314"
-          stroke="#171715"
-          strokeWidth="2"
-          strokeLinecap="round"
-        />
-
-        <path
-          d="M78 389C163 363 244 362 327 381C391 396 438 390 486 368"
-          stroke="#171715"
-          strokeWidth="1"
-          strokeLinecap="round"
-          strokeDasharray="4 8"
-        />
-
-        <path
-          d="M177 169C177 133 205 109 247 109H292C334 109 363 133 363 169V326C363 362 334 386 292 386H247C205 386 177 362 177 326V169Z"
-          fill="#F7F3EC"
-          stroke="#171715"
-          strokeWidth="3"
-        />
-
-        <path
-          d="M174 166H366"
-          stroke="#171715"
-          strokeWidth="3"
-          strokeLinecap="round"
-        />
-
-        <path
-          d="M208 197H329M208 223H317M208 249H330"
-          stroke="#171715"
-          strokeWidth="1.8"
-          strokeLinecap="round"
-        />
-
-        <path
-          d="M232 307C255 292 285 292 308 307"
-          stroke="#171715"
-          strokeWidth="2"
-          strokeLinecap="round"
-        />
-
-        <path
-          d="M260 104C264 66 286 42 326 33C365 24 397 41 422 74"
-          stroke="#171715"
-          strokeWidth="2"
-          strokeLinecap="round"
-        />
-
-        <path
-          d="M329 33C329 75 305 102 262 118"
-          stroke="#171715"
-          strokeWidth="2"
-          strokeLinecap="round"
-        />
-
-        <path
-          d="M329 33C365 62 378 94 367 131"
-          stroke="#171715"
-          strokeWidth="2"
-          strokeLinecap="round"
-        />
-
-        <path
-          d="M98 317V220"
-          stroke="#171715"
-          strokeWidth="1.8"
-          strokeLinecap="round"
-        />
-        <path
-          d="M98 220L58 308M98 220L139 308M98 253L70 313M98 253L126 313"
-          stroke="#171715"
-          strokeWidth="1.8"
-          strokeLinecap="round"
-        />
-
-        <path
-          d="M419 326V232"
-          stroke="#171715"
-          strokeWidth="1.8"
-          strokeLinecap="round"
-        />
-        <path
-          d="M419 232L380 318M419 232L459 318M419 262L393 322M419 262L445 322"
-          stroke="#171715"
-          strokeWidth="1.8"
-          strokeLinecap="round"
-        />
-
-        <path
-          d="M401 165C419 140 449 130 474 138C502 147 516 176 503 201C490 226 453 231 429 213C408 197 386 188 401 165Z"
-          fill="#C94131"
-          stroke="#171715"
-          strokeWidth="2"
-        />
-
-        <path
-          d="M451 214C448 239 445 260 444 288"
-          stroke="#171715"
-          strokeWidth="1.6"
-          strokeLinecap="round"
-        />
-
-        <path
-          d="M83 94C134 64 192 52 251 64C306 75 345 103 399 92"
-          stroke="#171715"
-          strokeWidth="1"
-          strokeLinecap="round"
-          strokeDasharray="4 9"
-        />
-
-        <text
-          x="270"
-          y="340"
-          textAnchor="middle"
-          fill="#171715"
-          fontFamily="Georgia, serif"
-          fontSize="28"
-        >
-          Care
-        </text>
-      </svg>
-    </div>
-  );
-};
-
-const PrincipleCard = ({ principle }) => {
-  return (
-    <article className="group relative overflow-hidden border-t border-[#171715]/20 py-7">
-      <div className="absolute inset-0 origin-left scale-x-0 bg-[#FFF8EA] transition-transform duration-500 group-hover:scale-x-100" />
-
-      <div className="relative grid gap-4 sm:grid-cols-[72px_1fr]">
-        <p className="text-xs uppercase tracking-[0.3em] text-[#68B7AA]">
-          {principle.number}
-        </p>
-
-        <div>
-          <h3
-            className="text-3xl font-normal leading-none tracking-[-0.04em] md:text-4xl"
-            style={{ fontFamily: "'Crimson Text', Georgia, serif" }}
-          >
-            {principle.title}
-          </h3>
-
-          <p className="mt-4 max-w-xl text-sm leading-7 text-[#171715]/68">
-            {principle.description}
-          </p>
-        </div>
-      </div>
-    </article>
-  );
-};
 
 const Philosophy = forwardRef(function Philosophy(props, ref) {
   return (
     <section
       ref={ref}
-      className="relative isolate overflow-hidden bg-[#F7F3EC] px-5 py-24 text-[#171715] md:px-10 md:py-28 lg:px-16"
+      className="relative isolate overflow-hidden px-5 py-24 md:px-10 md:py-32 lg:px-16"
+      style={{
+        backgroundColor: palette.cream,
+        color: palette.ink,
+      }}
     >
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-0 top-0 h-40 w-full bg-[linear-gradient(to_bottom,rgba(255,253,248,0.8),transparent)]" />
+      <style>
+        {`
+          .philosophy-tree-float {
+            animation: philosophyTreeFloat 9s ease-in-out infinite alternate;
+          }
+
+          @keyframes philosophyTreeFloat {
+            from {
+              transform: translate3d(-2%, 1%, 0) rotate(-1deg);
+            }
+            to {
+              transform: translate3d(1%, -1%, 0) rotate(1deg);
+            }
+          }
+
+          .philosophy-card-line {
+            position: relative;
+          }
+
+          .philosophy-card-line::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 0%;
+            width: 1px;
+            background: ${palette.accent};
+            transition: height 0.55s ease;
+          }
+
+          .philosophy-card-line:hover::before {
+            height: 100%;
+          }
+
+          .philosophy-word {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+          }
+
+          @media (max-width: 1024px) {
+            .philosophy-word {
+              writing-mode: horizontal-tb;
+            }
+          }
+        `}
+      </style>
+
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <img
+          src={treeImg}
+          alt=""
+          className="philosophy-tree-float absolute -left-24 bottom-0 w-[420px] max-w-none opacity-[0.18] mix-blend-multiply md:-left-32 md:w-[560px] lg:-left-40 lg:w-[720px]"
+        />
+
+        <div
+          className="absolute left-0 top-0 h-full w-[48%]"
+          style={{
+            background:
+              "linear-gradient(90deg, rgba(255,255,255,0.34), transparent)",
+          }}
+        />
 
         <p
-          className="absolute -right-8 top-10 hidden select-none text-[11rem] font-normal leading-none tracking-[-0.1em] text-[#171715]/[0.035] xl:block"
-          style={{ fontFamily: "'Crimson Text', Georgia, serif" }}
+          className="absolute -right-8 top-12 hidden select-none text-[10rem] font-normal leading-none tracking-[-0.08em] opacity-[0.045] xl:block"
+          style={{
+            fontFamily: fonts.primary,
+            color: palette.ink,
+          }}
         >
-          PURE
+          ROOTED
         </p>
 
-        <svg
-          viewBox="0 0 900 260"
-          className="absolute bottom-0 left-1/2 h-52 w-[900px] -translate-x-1/2 opacity-40"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M14 190C120 151 225 151 330 180C438 209 524 213 632 172C735 133 819 135 886 166"
-            stroke="#171715"
-            strokeWidth="1.2"
-            strokeLinecap="round"
-            strokeDasharray="4 9"
-          />
-          <path
-            d="M3 217C134 191 284 196 414 222C548 249 720 237 897 196"
-            stroke="#171715"
-            strokeWidth="1"
-            strokeLinecap="round"
-          />
-        </svg>
+        <div
+          className="absolute bottom-0 right-0 h-[360px] w-[360px] rounded-full blur-3xl"
+          style={{
+            backgroundColor: `${palette.accent}22`,
+          }}
+        />
       </div>
 
-      <div className="relative mx-auto max-w-6xl">
-        <div className="mb-14 grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-end">
-          <div>
-            <p className="mb-4 text-xs uppercase tracking-[0.34em] text-[#68B7AA]">
-              Our philosophy
-            </p>
+      <div className="relative mx-auto max-w-7xl">
+        
 
-            <h2
-              className="text-[clamp(3.5rem,7vw,7.8rem)] font-normal leading-[0.82] tracking-[-0.08em]"
-              style={{ fontFamily: "'Crimson Text', Georgia, serif" }}
-            >
-              Less is more.
-              <br />
-              Pure is better.
-            </h2>
+        <div className="mt-14 grid gap-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
+          <div
+            className="relative overflow-hidden rounded-[2rem] border p-7 md:p-9 lg:min-h-[620px]"
+            style={{
+              borderColor: `${palette.ink}20`,
+              backgroundColor: `${palette.paper}82`,
+              boxShadow: "0 24px 90px rgba(23, 23, 21, 0.07)",
+            }}
+          >
+            <img
+              src={treeImg}
+              alt=""
+              className="absolute -bottom-20 -left-24 w-[390px] opacity-[0.22] mix-blend-multiply md:w-[500px]"
+            />
+
+            <div className="relative z-10 flex h-full flex-col justify-between gap-20">
+              <div>
+                <p
+                  className="mb-4 text-xs font-semibold uppercase tracking-[0.3em]"
+                  style={{
+                    color: palette.accent,
+                    fontFamily: fonts.secondary,
+                  }}
+                >
+                  Manifesto
+                </p>
+
+                <h3
+                  className="max-w-sm text-5xl font-normal leading-[0.88] tracking-[-0.055em] md:text-6xl"
+                  style={{
+                    fontFamily: fonts.primary,
+                  }}
+                >
+                  <p>
+                    Less is More.
+                  </p>
+                  <p>
+                    Pure is Better.
+                  </p>
+                </h3>
+              </div>
+
+              <div
+                className="relative ml-auto max-w-sm rounded-[1.5rem] border p-6 backdrop-blur-md"
+                style={{
+                  borderColor: `${palette.ink}18`,
+                  backgroundColor: "rgba(255, 255, 255, 0.54)",
+                }}
+              >
+                <p
+                  className="text-sm leading-7"
+                  style={{
+                    color: palette.muted,
+                    fontFamily: fonts.secondary,
+                  }}
+                >
+                  We do not build routines around excess. We build them around
+                  clarity: what cleanses, what restores, what protects, and what
+                  can be repeated without confusion.
+                </p>
+              </div>
+            </div>
           </div>
 
-          <div className="max-w-xl lg:ml-auto">
-            <p className="text-sm leading-7 text-[#171715]/70 md:text-base">
-              Etlawm begins with a simple idea: care should feel clear, useful,
-              and repeatable. We remove what does not belong, keep what serves
-              the formula, and build products that fit into a daily ritual
-              without making the routine heavier.
-            </p>
+          <div className="grid gap-5">
+            {principles.map((principle, index) => (
+              <article
+                key={principle.number}
+                className="philosophy-card-line group relative overflow-hidden rounded-[2rem] border p-6 transition duration-500 hover:-translate-y-1 md:p-8"
+                style={{
+                  borderColor: `${palette.ink}20`,
+                  backgroundColor:
+                    index === 1 ? `${palette.surface}88` : `${palette.paper}90`,
+                  boxShadow: "0 18px 70px rgba(23, 23, 21, 0.055)",
+                }}
+              >
+                <div
+                  className="absolute inset-0 origin-left scale-x-0 transition-transform duration-500 group-hover:scale-x-100"
+                  style={{
+                    backgroundColor: `${palette.hover}30`,
+                  }}
+                />
 
-            <Link
-              to="/collection"
-              className="mt-7 inline-flex rounded-full bg-[#68B7AA] px-6 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-white shadow-[0_12px_30px_rgba(104,183,170,0.22)] transition hover:-translate-y-0.5 hover:bg-[#579f94]"
-            >
-              Explore collection
-            </Link>
-          </div>
-        </div>
+                <div className="relative grid gap-8 md:grid-cols-[110px_1fr] md:items-start">
+                  <div>
+                    <p
+                      className="text-5xl font-normal leading-none tracking-[-0.06em]"
+                      style={{
+                        fontFamily: fonts.primary,
+                        color: palette.accent,
+                      }}
+                    >
+                      {principle.number}
+                    </p>
 
-        <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-          <PhilosophySketch />
+                    <p
+                      className="mt-3 text-[10px] font-semibold uppercase tracking-[0.24em]"
+                      style={{
+                        color: palette.muted,
+                        fontFamily: fonts.secondary,
+                      }}
+                    >
+                      {principle.label}
+                    </p>
+                  </div>
 
-          <div className="border-b border-[#171715]/20">
-            {principles.map((principle) => (
-              <PrincipleCard key={principle.number} principle={principle} />
+                  <div>
+                    <h3
+                      className="max-w-2xl text-4xl font-normal leading-[0.92] tracking-[-0.05em] md:text-5xl"
+                      style={{
+                        fontFamily: fonts.primary,
+                      }}
+                    >
+                      {principle.title}
+                    </h3>
+
+                    <p
+                      className="mt-5 max-w-2xl text-sm leading-7 md:text-base"
+                      style={{
+                        color: palette.muted,
+                        fontFamily: fonts.secondary,
+                      }}
+                    >
+                      {principle.description}
+                    </p>
+                  </div>
+                </div>
+              </article>
             ))}
+
+            
           </div>
         </div>
       </div>

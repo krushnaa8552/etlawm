@@ -66,6 +66,16 @@ export default function ProductPurchasePanel({
 
   const buttonAdded = added || localAdded;
 
+  const handleIncrease = () => {
+    setLocalAdded(false);
+    if (typeof increase === "function") increase();
+  };
+
+  const handleDecrease = () => {
+    setLocalAdded(false);
+    if (typeof decrease === "function") decrease();
+  };
+
   return (
     <aside className="lg:sticky lg:bottom-6 lg:self-end">
       <div
@@ -185,8 +195,8 @@ export default function ProductPurchasePanel({
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
           <AddToCartNumbers
             count={quantity}
-            onIncrease={increase}
-            onDecrease={decrease}
+            onIncrease={handleIncrease}
+            onDecrease={handleDecrease}
           />
 
           <button
