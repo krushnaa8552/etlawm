@@ -25,25 +25,32 @@ import FloatingCart from './Components/FloatingCart.jsx';
 function LoginRouteGuard() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { token, user, isAdmin } = useAuth();
   const hasShownAlert = useRef(false);
 
   useEffect(() => {
+    if (!token || !user) return;
     if (hasShownAlert.current) return;
 
     hasShownAlert.current = true;
 
-    alert("Work in Progress");
+    alert("You are already logged in.");
 
     const previousPath = location.state?.from;
 
     if (previousPath) {
       navigate(previousPath, { replace: true });
-    } else {
-      navigate(-1);
+      return;
     }
-  }, [navigate, location.state]);
 
-  return null;
+    navigate(isAdmin ? "/admin/dashboard" : "/dashboard", { replace: true });
+  }, [token, user, isAdmin, navigate, location.state]);
+
+  if (token && user) {
+    return null;
+  }
+
+  return <Login />;
 }
 // till here
 
