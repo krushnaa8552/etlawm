@@ -18,9 +18,37 @@ import paymentRouter from './routes/paymentRoute.js';
 
 const app = express();
 
+const allowedOrigins = process.env.CLIENT_URL
+  ? process.env.CLIENT_URL.split(',').map(url => url.trim())
+  : [];
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, curl, or postman)
+      if (!origin) return callback(null, true);
+
+      // Check if it's in the explicitly allowed list
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      // Check if it is a localhost origin (for local development)
+      if (/^http:\/\/localhost(:\d+)?$/.test(origin)) {
+        return callback(null, true);
+      }
+
+      // Check if it is a Vercel deployment/preview origin
+      if (
+        origin.endsWith('.vercel.app') ||
+        origin.endsWith('.projects.vercel.app') ||
+        /^https:\/\/etlawm-cwvy-.*\.vercel\.app$/.test(origin)
+      ) {
+        return callback(null, true);
+      }
+
+      callback(new Error('Not allowed by CORS'));
+    },
     credentials: true,
     methods: ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: [
