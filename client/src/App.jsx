@@ -1,25 +1,52 @@
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
+import { useEffect, useRef } from 'react';
 import ScrollToTop from './Components/ScrollToTop.jsx';
 import Lenis from 'lenis';
 import './App.css';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './Components/ProtectedRoute';
 import AdminRoute from './Components/AdminPanel/AdminRoute';
-import Home      from './Pages/Home2.jsx';
-import Login       from './Pages/Login2.jsx';
+import Home      from './Pages/Home.jsx';
+import Login       from './Pages/Login.jsx';
 import Collection from './Pages/Collection.jsx';
 import Cart        from './Pages/Cart.jsx';
-import Product     from './Pages/Product3.jsx';
+import Product     from './Pages/Product.jsx';
 import Ingredients from './Pages/Ingredients.jsx';
 import DashBoard   from './Pages/DashBoard.jsx';
 import Ritual      from './Pages/Ritual.jsx';
 import AdminDashBoard from './Pages/AdminDashBoard.jsx';
-import Scrapping from './Scrapping/Scrapping.jsx';
 import OrderSuccess from './Pages/OrderSuccess.jsx';
 import { useAuth } from './context/AuthContext';
 import Loader from './Components/Loader';
 import FloatingCart from './Components/FloatingCart.jsx';
+
+
+// remove this later
+function LoginRouteGuard() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const hasShownAlert = useRef(false);
+
+  useEffect(() => {
+    if (hasShownAlert.current) return;
+
+    hasShownAlert.current = true;
+
+    alert("Work in Progress");
+
+    const previousPath = location.state?.from;
+
+    if (previousPath) {
+      navigate(previousPath, { replace: true });
+    } else {
+      navigate(-1);
+    }
+  }, [navigate, location.state]);
+
+  return null;
+}
+// till here
+
 
 function AppRoutes() {
   const { loading } = useAuth();
@@ -57,9 +84,9 @@ function AppRoutes() {
       <>
         <ScrollToTop />
         <Routes>
-          <Route path="/scrap" element={<Scrapping />} />
           <Route path="/"                         element={<Home />} />
-          <Route path="/login"                    element={<Login />} />
+          {/* <Route path="/login"                    element={<Login />} />*/}
+          <Route path="/login"                    element={<LoginRouteGuard />} />
           {/* Collection routes */}
           <Route path="/collection"               element={<Collection />} />
           <Route path="/collection/:category"     element={<Collection />} />

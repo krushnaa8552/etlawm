@@ -287,31 +287,70 @@ const users = {
 };
 
 // helper function to access the otp_codes table
+// helper function to access the otp_codes table
 const otpCodes = {
-    create: ({ phone_number, otp_hash, expires_at }) =>
+    create: ({
+        phone_number,
+        session_id,
+        otp_hash,
+        provider = "whatsapp",
+        expires_at,
+    }) =>
         query(
-            `INSERT INTO otp_codes (phone_number, otp_hash, expires_at)
-             VALUES ($1, $2, $3) RETURNING id, created_at`,
-            [phone_number, otp_hash, expires_at]
+            `
+            INSERT INTO otp_codes (
+                phone_number,
+                session_id,
+                otp_hash,
+                provider,
+                expires_at
+            )
+            VALUES ($1, $2, $3, $4, $5)
+            RETURNING id, phone_number, session_id, otp_hash, provider, expires_at, created_at
+            `,
+            [phone_number, session_id, otp_hash, provider, expires_at]
         ),
 
-    /** Find the latest unexpired OTP for a phone number */
     findLatest: (phone_number) =>
         query(
-            `SELECT * FROM otp_codes
-             WHERE phone_number = $1 AND expires_at > now()
-             ORDER BY created_at DESC LIMIT 1`,
+            `
+            SELECT *
+            FROM otp_codes
+            WHERE phone_number = $1
+              AND expires_at > now()
+            ORDER BY created_at DESC
+            LIMIT 1
+            `,
             [phone_number]
         ),
 
     incrementAttempts: (id) =>
-        query(`UPDATE otp_codes SET attempts = attempts + 1 WHERE id = $1`, [id]),
+        query(
+            `
+            UPDATE otp_codes
+            SET attempts = attempts + 1
+            WHERE id = $1
+            RETURNING *
+            `,
+            [id]
+        ),
 
     deleteByPhone: (phone_number) =>
-        query(`DELETE FROM otp_codes WHERE phone_number = $1`, [phone_number]),
+        query(
+            `
+            DELETE FROM otp_codes
+            WHERE phone_number = $1
+            `,
+            [phone_number]
+        ),
 
     deleteExpired: () =>
-        query(`DELETE FROM otp_codes WHERE expires_at <= now()`),
+        query(
+            `
+            DELETE FROM otp_codes
+            WHERE expires_at <= now()
+            `
+        ),
 };
 
 // helper function to access the user_sessions table

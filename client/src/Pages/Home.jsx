@@ -1,40 +1,36 @@
 import NavBar from "../Components/NavBar2.jsx";
-import HeroBanner2 from "../Components/HomePage/HeroBanner2.jsx";
-import IngredientsShowcase from "../Components/HomePage/IngredientsShowcase.jsx";
-import FeaturedProducts from "../Components/HomePage/FeaturedProducts.jsx";
-import Philosophy2 from "../Components/HomePage/Philosophy2.jsx";
-import Footer2 from "../Components/Footer2.jsx";
-import ReviewPanel from "../Components/HomePage/ReviewPanel.jsx";
+import HomeHero from "../Components/HomePage/HomeHero.jsx";
+import HomeDirections from "../Components/HomePage/HomeDirections.jsx";
+import HomePathways from "../Components/HomePage/HomePathways.jsx";
+import HomePrinciples from "../Components/HomePage/HomePrinciples.jsx";
+import HomeInsights from "../Components/HomePage/HomeInsights.jsx";
+import HomeSupport from "../Components/HomePage/HomeSupport.jsx";
+import HomeQuestions from "../Components/HomePage/HomeQuestions.jsx";
+import HomeFinalCTA from "../Components/HomePage/HomeFinalCTA.jsx";
+import HomeFooter from "../Components/HomePage/HomeFooter.jsx";
+import Footer from "../Components/Footer.jsx";
+import Philosophy from "../Components/HomePage/Philosophy3.jsx";
+import ProductPanel from "../Components/HomePage/ProductPanel.jsx";
 
 const Home = () => {
   return (
-    <div className="w-full min-h-screen overflow-x-hidden flex flex-col bg-[#F7F3EC]">
-      {/* Retained NavBar */}
+    <div className="min-h-screen w-full overflow-x-hidden bg-[#F7F3EC] text-[#171715]">
       <NavBar />
 
-      {/* New Creative Hero Banner */}
-      <HeroBanner2 />
-      <br />
+      <main>
+        <HomeHero />
+        {/* <HomeDirections />*/}
+        {/* <HomePathways />*/}
+        <ProductPanel />
+        <HomePrinciples />
+        <Philosophy />
+        {/* <HomeInsights />*/}
+        <HomeSupport />
+        <HomeQuestions />
+        {/* <HomeFinalCTA />*/}
+      </main>
 
-      {/* Interactive Ingredients Showcase */}
-      <IngredientsShowcase />
-
-      {/* Curated Best Sellers Grid */}
-      <FeaturedProducts />
-
-      {/* Retained ReviewPanel wrapped in Parallax */}
-      
-      <ReviewPanel />
-      
-
-
-      {/* Remade Philosophy Panel */}
-      <Philosophy2 />
-
-      {/* Remade Footer */}
-      <div className="mt-auto">
-        <Footer2 />
-      </div>
+      <Footer />
     </div>
   );
 };

@@ -9,88 +9,117 @@ const sendOtp = async (req, res) => {
   const { phone_number, country_code = "+91" } = req.body;
 
   if (!phone_number) {
-    return res.status(400).json({ success: false, message: "Phone number is required." });
+    return res.status(400).json({
+      success: false,
+      message: "Phone number is required.",
+    });
   }
 
-  const digits = phone_number.replace(/\D/g, "");
-  if (digits.length < 7 || digits.length > 15) {
-    return res.status(400).json({ success: false, message: "Invalid phone number format." });
-  }
+  const e164phone = otpService.normalizeIndianPhone(phone_number, country_code);
 
-  const ccDigits = country_code.replace(/\D/g, "");
-  const e164phone = ccDigits + digits.replace(/^0+/, "");
+  if (!otpService.isValidIndianPhone(e164phone)) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid phone number format.",
+    });
+  }
 
   try {
     await db.otpCodes.deleteByPhone(e164phone);
 
-    const otp = otpService.generateOtp();
-    const otp_hash = await otpService.hashOtp(otp);
+    const otpResult = await otpService.sendOtp(phone_number, country_code);
+
     const expires_at = new Date(
-      Date.now() + (parseInt(process.env.OTP_EXPIRY_MINUTES, 10) || 5) * 60_000,
+      Date.now() + (parseInt(process.env.OTP_EXPIRY_MINUTES, 10) || 5) * 60_000
     );
 
-    await db.otpCodes.create({ phone_number: e164phone, otp_hash, expires_at });
+    await db.otpCodes.create({
+      phone_number: e164phone,
+      session_id: otpResult.session_id,
+      otp_hash: otpResult.otp_hash,
+      provider: "whatsapp",
+      expires_at,
+    });
 
-    await otpService.sendOtp(e164phone, otp); //IMPORTANT
-
-    res.json({
+    return res.json({
       success: true,
       message: "If the number is valid, an OTP has been sent.",
     });
   } catch (err) {
     console.error("[send-otp]", err);
-    res
-      .status(500)
-      .json({ success: false, message: "Server error. Please try again." });
+
+    return res.status(500).json({
+      success: false,
+      message: err.message || "Server error. Please try again.",
+    });
   }
-}
+};
 
 //post
 const verifyOtp = async (req, res) => {
   const { phone_number, country_code = "+91", otp } = req.body;
-  
+
   if (!phone_number || !otp) {
-    return res
-      .status(400)
-      .json({ success: false, message: "Phone Number and OTP are required." });
+    return res.status(400).json({
+      success: false,
+      message: "Phone Number and OTP are required.",
+    });
   }
 
-  const digits = phone_number.replace(/\D/g, "");
-  const ccDigits = country_code.replace(/\D/g, "");
-  const e164phone = ccDigits + digits.replace(/^0+/, "");
-  
+  const e164phone = otpService.normalizeIndianPhone(phone_number, country_code);
+
+  if (!otpService.isValidIndianPhone(e164phone)) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid phone number format.",
+    });
+  }
+
   try {
     const { rows: otpRows } = await db.otpCodes.findLatest(e164phone);
+
     if (!otpRows.length) {
       return res.status(400).json({
-          success: false,
-          message: "No valid OTP found. Please request a new one.",
-        });
+        success: false,
+        message: "No valid OTP found. Please request a new one.",
+      });
     }
 
     const otpRecord = otpRows[0];
 
+    if (new Date(otpRecord.expires_at) < new Date()) {
+      await db.otpCodes.deleteByPhone(e164phone);
+
+      return res.status(400).json({
+        success: false,
+        message: "OTP expired. Please request a new one.",
+      });
+    }
+
     if (otpRecord.attempts >= 5) {
-      return res
-        .status(429)
-        .json({
-          success: false,
-          message: "Too many incorrect attempts. Please request a new OTP.",
-        });
+      await db.otpCodes.deleteByPhone(e164phone);
+
+      return res.status(429).json({
+        success: false,
+        message: "Too many incorrect attempts. Please request a new OTP.",
+      });
     }
 
-    await db.otpCodes.incrementAttempts(otpRecord.id);
-
-    const isValid = await otpService.verifyOtp(String(otp), otpRecord.otp_hash);
-    if (!isValid) {
-      return res
-        .status(401)
-        .json({ success: false, message: "Incorrect OTP. Please try again." });
+    try {
+      await otpService.verifyOtp(otpRecord, otp);
+    } catch (error) {
+      await db.otpCodes.incrementAttempts(otpRecord.id);
+    
+      return res.status(401).json({
+        success: false,
+        message: "Incorrect OTP. Please try again.",
+      });
     }
-
+    
     await db.otpCodes.deleteByPhone(e164phone);
 
     const shouldBeAdmin = await db.adminPhones.isAdmin(e164phone);
+
     let { rows: userRows } = await db.users.findByPhone(e164phone);
     let isNewUser = false;
 
@@ -101,16 +130,18 @@ const verifyOtp = async (req, res) => {
         onboarding_step: 0,
         is_admin: shouldBeAdmin,
       });
+
       userRows = rows;
       isNewUser = true;
     } else {
       await db.users.markPhoneVerified(e164phone);
       await db.users.touchLastLogin(userRows[0].id);
+
       if (userRows[0].is_admin !== shouldBeAdmin) {
-        const { rows: updatedUserRows } = await db.users.update(
-          userRows[0].id,
-          { is_admin: shouldBeAdmin },
-        );
+        const { rows: updatedUserRows } = await db.users.update(userRows[0].id, {
+          is_admin: shouldBeAdmin,
+        });
+
         userRows = updatedUserRows;
       }
     }
@@ -124,12 +155,10 @@ const verifyOtp = async (req, res) => {
       is_admin: user.is_admin ?? false,
     });
 
-    // Store a lightweight session record (for future revocation)
-    // refresh_token_hash is NOT NULL in schema — store a hashed random token
-    // as a placeholder until refresh-token rotation is implemented.
-    const expiresAt = new Date(Date.now() + 14 * 24 * 60 * 60_000); // 14 days
+    const expiresAt = new Date(Date.now() + 14 * 24 * 60 * 60_000);
     const rawRefreshToken = crypto.randomBytes(32).toString("hex");
     const refresh_token_hash = await bcrypt.hash(rawRefreshToken, 10);
+
     await db.userSessions.create({
       user_id: user.id,
       refresh_token_hash,
@@ -138,7 +167,7 @@ const verifyOtp = async (req, res) => {
       expires_at: expiresAt,
     });
 
-    res.json({
+    return res.json({
       success: true,
       token,
       isNewUser,
@@ -154,11 +183,13 @@ const verifyOtp = async (req, res) => {
     });
   } catch (err) {
     console.error("[verify-otp]", err);
-    res
-      .status(500)
-      .json({ success: false, message: "Server error. Please try again." });
+
+    return res.status(400).json({
+      success: false,
+      message: err.message || "OTP verification failed. Please try again.",
+    });
   }
-}
+};
 
 //post
 const onBoard = async (req, res) => {

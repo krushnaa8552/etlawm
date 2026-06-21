@@ -1,5 +1,3 @@
-import Home from "./Home2";
-
 const Ritual = () => {
   return (
     <div>

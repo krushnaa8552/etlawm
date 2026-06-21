@@ -1,88 +1,95 @@
-'use strict';
-/**
- * ─── OTP Service ─────────────────────────────────────────────────────────────
- * Handles generation, hashing, verification, and delivery of one-time passwords.
- * OTPs are NEVER stored or transmitted in plaintext — only bcrypt hashes land
- * in the database.
- * ─────────────────────────────────────────────────────────────────────────────
- */
-
+// services/otpService.js
 import crypto from 'crypto';
 import bcrypt from 'bcrypt';
-import * as wa from './whatsappService.js';
+import { sendOtpMessage } from './whatsappService.js';
 
-const OTP_LENGTH = 6;
-const BCRYPT_ROUNDS = 10;
+const normalizeIndianPhone = (phone_number, country_code = "+91") => {
+  const digits = String(phone_number || "").replace(/\D/g, "");
+  const ccDigits = String(country_code || "+91").replace(/\D/g, "");
 
-/**
- * Generate a cryptographically random numeric OTP.
- * @returns {string} Zero-padded 6-digit string, e.g. "048291"
- */
-function generateOtp() {
-    // Random integer in [0, 999999], zero-padded to OTP_LENGTH digits
-    // const raw = crypto.randomInt(0, 10 ** OTP_LENGTH);
-    // return String(raw).padStart(OTP_LENGTH, '0');
-  const raw = 123456;
-  return String(raw);
-}
+  if (digits.length === 12 && digits.startsWith("91")) {
+    return digits;
+  }
 
-/**
- * Hash an OTP with bcrypt.
- * @param {string} otp
- * @returns {Promise<string>} bcrypt hash
- */
-async function hashOtp(otp) {
-    // return bcrypt.hash(otp, BCRYPT_ROUNDS);
-  return otp;
-}
+  if (digits.length === 10) {
+    return `${ccDigits}${digits}`;
+  }
 
-/**
- * Securely compare a plaintext OTP against its stored bcrypt hash.
- * @param {string} otp       Plaintext OTP supplied by the user
- * @param {string} hash      bcrypt hash from the database
- * @returns {Promise<boolean>}
- */
-async function verifyOtp(otp, hash) {
-    // return bcrypt.compare(otp, hash);
-  return otp;
-}
+  return `${ccDigits}${digits.replace(/^0+/, "")}`;
+};
 
-/**
- * Send an OTP to the given phone number.
- *
- * In production: calls the WhatsApp Cloud API via an approved OTP template.
- * In development (ACCESS_TOKEN not set): logs the OTP to the console so you
- *   can test without a real WhatsApp integration.
- *
- * @param {string} phone   E.164-formatted number, e.g. "919876543210"
- * @param {string} otp     Plaintext OTP to deliver
- */
-async function sendOtp(phone, otp) {
-    // ── ALWAYS print OTP to console during building/testing ──
-    console.log(`\n[OTP Service] ── DEBUG/DEV ──`);
-    console.log(`[OTP Service] Phone : ${phone}`);
-    console.log(`[OTP Service] OTP   : ${otp}`);
-    console.log(`[OTP Service] ───────────────────\n`);
+const getLocalIndianPhone = (e164phone) => {
+  const digits = String(e164phone || "").replace(/\D/g, "");
 
-    const token = process.env.WHATSAPP_TOKEN || process.env.YOUR_ACCESS_TOKEN;
+  if (digits.length === 12 && digits.startsWith("91")) {
+    return digits.slice(2);
+  }
 
-    if (!token) {
-        return;
-    }
+  return digits;
+};
 
-    // ── Production: WhatsApp OTP template ────────────────────────────────────
-    // The template must be named per WA_OTP_TEMPLATE and pre-approved in Meta
-    // Business Manager with one body parameter containing the OTP code.
-    try {
-        const template = process.env.WA_OTP_TEMPLATE || 'otp_auth';
-        await wa.sendWhatsAppMessage(phone, otp, template);
-    } catch (err) {
-        // Non-fatal: log the error but don't crash the request.
-        // The caller will still return the generic "OTP sent" response.
-        console.error('[OTP Service] WhatsApp delivery failed:', err.message);
-    }
-}
+const isValidIndianPhone = (e164phone) => {
+  const localPhone = getLocalIndianPhone(e164phone);
+  return /^[6-9]\d{9}$/.test(localPhone);
+};
 
-const otpService = { generateOtp, hashOtp, verifyOtp, sendOtp };
+const sendOtp = async (phone_number, country_code = "+91") => {
+  const e164phone = normalizeIndianPhone(phone_number, country_code);
 
-export default otpService;
+  if (!isValidIndianPhone(e164phone)) {
+    throw new Error("Invalid phone number format.");
+  }
+
+  const localPhone = getLocalIndianPhone(e164phone);
+  
+  // Generate 4-digit OTP
+  const otpCode = Math.floor(1000 + Math.random() * 9000).toString();
+
+  // Send via WhatsApp
+  await sendOtpMessage(e164phone, otpCode);
+
+  // Hash OTP code
+  const otp_hash = await bcrypt.hash(otpCode, 10);
+  const session_id = crypto.randomBytes(16).toString('hex');
+
+  return {
+    e164phone,
+    localPhone,
+    session_id,
+    otp_hash,
+  };
+};
+
+const verifyOtp = async (otpRecord, otp) => {
+  const cleanOtp = String(otp || "").replace(/\D/g, "");
+
+  if (!otpRecord) {
+    throw new Error("OTP session is missing.");
+  }
+
+  if (!otpRecord.otp_hash) {
+    throw new Error("No secure OTP hash available for verification.");
+  }
+
+  if (!/^\d{4}$/.test(cleanOtp)) {
+    throw new Error("Invalid OTP format.");
+  }
+
+  const isMatch = await bcrypt.compare(cleanOtp, otpRecord.otp_hash);
+
+  if (!isMatch) {
+    throw new Error("Incorrect OTP.");
+  }
+
+  return {
+    success: true,
+  };
+};
+
+export default {
+  normalizeIndianPhone,
+  getLocalIndianPhone,
+  isValidIndianPhone,
+  sendOtp,
+  verifyOtp,
+};

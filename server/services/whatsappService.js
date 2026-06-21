@@ -1,14 +1,15 @@
 import dotenv from 'dotenv';
 import axios from 'axios';
 import FormData from 'form-data';
-// const FormData = require('form-data');
 import fs from 'fs';
 
-dotenv.config()
+dotenv.config();
+
+const PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID || '1054627024408940';
 
 const sendTemplateMessage = async () => {
   const response = await axios({
-    url: 'https://graph.facebook.com/v25.0/1054627024408940/messages',
+    url: `https://graph.facebook.com/v25.0/${PHONE_NUMBER_ID}/messages`,
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${process.env.WHATSAPP_TOKEN}`,
@@ -32,7 +33,7 @@ const sendTemplateMessage = async () => {
 
 const sendTextMessage = async (to, message) => {
   const response = await axios({
-    url: 'https://graph.facebook.com/v25.0/1054627024408940/messages',
+    url: `https://graph.facebook.com/v25.0/${PHONE_NUMBER_ID}/messages`,
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${process.env.WHATSAPP_TOKEN}`,
@@ -53,7 +54,7 @@ const sendTextMessage = async (to, message) => {
 
 const sendMediaMessage = async () => {
   const response = await axios({
-    url: 'https://graph.facebook.com/v25.0/1054627024408940/messages',
+    url: `https://graph.facebook.com/v25.0/${PHONE_NUMBER_ID}/messages`,
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${process.env.WHATSAPP_TOKEN}`,
@@ -80,7 +81,7 @@ const uploadImage = async () => {
   data.append('type', 'image/png');
   
   const response = await axios({
-    url: 'https://graph.facebook.com/v25.0/1054627024408940/media',
+    url: `https://graph.facebook.com/v25.0/${PHONE_NUMBER_ID}/media`,
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${process.env.WHATSAPP_TOKEN}`
@@ -91,9 +92,106 @@ const uploadImage = async () => {
   console.log(response.data);
 }
 
+const sendOtpMessage = async (to, otp) => {
+  const url = `https://graph.facebook.com/v25.0/${PHONE_NUMBER_ID}/messages`;
+  const templateName = process.env.WA_OTP_TEMPLATE;
+
+  const headers = {
+    'Authorization': `Bearer ${process.env.WHATSAPP_TOKEN}`,
+    'Content-Type': 'application/json'
+  };
+
+  let data;
+  if (templateName) {
+    data = {
+      messaging_product: 'whatsapp',
+      to,
+      type: 'template',
+      template: {
+        name: templateName,
+        language: {
+          code: 'en'
+        },
+        components: [
+          {
+            type: 'body',
+            parameters: [
+              {
+                type: 'text',
+                text: otp
+              }
+            ]
+          },
+          {
+            type: 'button',
+            sub_type: 'url',
+            index: '0',
+            parameters: [
+              {
+                type: 'text',
+                text: otp
+              }
+            ]
+          }
+        ]
+      }
+    };
+  } else {
+    data = {
+      messaging_product: 'whatsapp',
+      to,
+      type: 'text',
+      text: {
+        body: `Your ETLAWM verification code is ${otp}. It is valid for 5 minutes.`
+      }
+    };
+  }
+
+  console.log(`[whatsappService sendOtpMessage] Sending to ${to} via ${templateName ? 'template:' + templateName : 'text'}`);
+
+  try {
+    const response = await axios({
+      url,
+      method: 'POST',
+      headers,
+      data
+    });
+    console.log('[whatsappService sendOtpMessage] Response:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('[whatsappService sendOtpMessage] Error detail:', error.response?.data || error.message);
+    if (templateName) {
+      console.log('[whatsappService sendOtpMessage] Attempting text message fallback...');
+      const fallbackData = {
+        messaging_product: 'whatsapp',
+        to,
+        type: 'text',
+        text: {
+          body: `Your ETLAWM verification code is ${otp}. It is valid for 5 minutes.`
+        }
+      };
+      try {
+        const fallbackResponse = await axios({
+          url,
+          method: 'POST',
+          headers,
+          data: fallbackData
+        });
+        console.log('[whatsappService sendOtpMessage] Fallback Response:', fallbackResponse.data);
+        return fallbackResponse.data;
+      } catch (fallbackError) {
+        console.error('[whatsappService sendOtpMessage] Fallback also failed:', fallbackError.response?.data || fallbackError.message);
+        throw fallbackError;
+      }
+    }
+    throw error;
+  }
+};
+
 export {
   sendTemplateMessage,
   sendTextMessage,
   sendMediaMessage,
-  uploadImage
+  uploadImage,
+  sendOtpMessage
 }
