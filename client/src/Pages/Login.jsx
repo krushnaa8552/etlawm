@@ -216,7 +216,7 @@ export default function Login() {
   
     if (!authLoading && !token && !user) {
       alertShownRef.current = true;
-      alert("Please log in to continue.");
+      alert("Work in progress, you won't be able to log in");
     }
   }, [authLoading, token, user]);
 

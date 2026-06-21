@@ -22,36 +22,36 @@ import FloatingCart from './Components/FloatingCart.jsx';
 
 
 // remove this later
-function LoginRouteGuard() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { token, user, isAdmin } = useAuth();
-  const hasShownAlert = useRef(false);
+// function LoginRouteGuard() {
+//   const navigate = useNavigate();
+//   const location = useLocation();
+//   const { token, user, isAdmin } = useAuth();
+//   const hasShownAlert = useRef(false);
 
-  useEffect(() => {
-    if (!token || !user) return;
-    if (hasShownAlert.current) return;
+//   useEffect(() => {
+//     if (!token || !user) return;
+//     if (hasShownAlert.current) return;
 
-    hasShownAlert.current = true;
+//     hasShownAlert.current = true;
 
-    alert("Work in Progress");
+//     alert("Work in Progress");
 
-    const previousPath = location.state?.from;
+//     const previousPath = location.state?.from;
 
-    if (previousPath) {
-      navigate(previousPath, { replace: true });
-      return;
-    }
+//     if (previousPath) {
+//       navigate(previousPath, { replace: true });
+//       return;
+//     }
 
-    navigate(isAdmin ? "/admin/dashboard" : "/dashboard", { replace: true });
-  }, [token, user, isAdmin, navigate, location.state]);
+//     navigate(isAdmin ? "/admin/dashboard" : "/dashboard", { replace: true });
+//   }, [token, user, isAdmin, navigate, location.state]);
 
-  if (token && user) {
-    return null;
-  }
+//   if (token && user) {
+//     return null;
+//   }
 
-  return <Login />;
-}
+//   return <Login />;
+// }
 // till here
 
 
@@ -93,7 +93,7 @@ function AppRoutes() {
         <Routes>
           <Route path="/"                         element={<Home />} />
           {/* <Route path="/login"                    element={<Login />} />*/}
-          <Route path="/login"                    element={<LoginRouteGuard />} />
+          <Route path="/login"                    element={<Login />} />
           {/* Collection routes */}
           <Route path="/collection"               element={<Collection />} />
           <Route path="/collection/:category"     element={<Collection />} />
