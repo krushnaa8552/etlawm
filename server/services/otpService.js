@@ -45,6 +45,8 @@ const sendOtp = async (phone_number, country_code = "+91") => {
   // Generate 4-digit OTP
   const otpCode = Math.floor(1000 + Math.random() * 9000).toString();
 
+  console.log(`🔑 [OTP] Generated OTP for ${e164phone}: ${otpCode}`);
+
   // Send via WhatsApp
   await sendOtpMessage(e164phone, otpCode);
 
