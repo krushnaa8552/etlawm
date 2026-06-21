@@ -34,7 +34,7 @@ function LoginRouteGuard() {
 
     hasShownAlert.current = true;
 
-    alert("You are already logged in.");
+    alert("Work in Progress");
 
     const previousPath = location.state?.from;
 
