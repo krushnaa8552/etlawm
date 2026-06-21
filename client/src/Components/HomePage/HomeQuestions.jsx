@@ -75,8 +75,7 @@ const HomeQuestions = () => {
               fontFamily: fonts.secondary,
             }}
           >
-            Send a message and keep it direct. This section is only the frontend
-            form until your contact API is connected.
+            Send a message and keep it direct.
           </p>
         </div>
 
