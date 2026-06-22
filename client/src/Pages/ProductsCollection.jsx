@@ -102,6 +102,13 @@ function ActiveChips({ filters, setFilters, categories }) {
 
 /* ─── Loading Skeleton Grid ───────────────────────────────────── */
 function SkeletonGrid() {
+  const shimmerBg = "linear-gradient(90deg, #E8DDD3 25%, #F2EDE7 50%, #E8DDD3 75%)";
+  const shimmerStyle = {
+    background: shimmerBg,
+    backgroundSize: "200% 100%",
+    animation: "skeletonShimmer 1.6s ease-in-out infinite",
+  };
+
   return (
     <div
       style={{
@@ -114,62 +121,45 @@ function SkeletonGrid() {
         <div
           key={i}
           style={{
-            borderRadius: "4px",
-            overflow: "hidden",
-            background: colours.surface,
+            width: "100%",
+            display: "flex",
+            flexDirection: "column",
+            gap: "14px",
           }}
         >
           <div
             style={{
-              aspectRatio: "3/4",
-              background:
-                "linear-gradient(90deg, #E8DDD3 25%, #F2EDE7 50%, #E8DDD3 75%)",
-              backgroundSize: "200% 100%",
-              animation: "skeletonShimmer 1.6s ease-in-out infinite",
+              width: "100%",
+              aspectRatio: "2 / 3",
+              borderRadius: "16px",
+              ...shimmerStyle,
             }}
           />
 
           <div
             style={{
-              padding: "16px",
               display: "flex",
               flexDirection: "column",
-              gap: "10px",
+              alignItems: "center",
+              gap: "6px",
+              padding: "0 8px",
             }}
           >
             <div
               style={{
-                height: "10px",
-                width: "50%",
+                height: "16px",
+                width: "65%",
                 borderRadius: "4px",
-                background:
-                  "linear-gradient(90deg, #E8DDD3 25%, #F2EDE7 50%, #E8DDD3 75%)",
-                backgroundSize: "200% 100%",
-                animation: "skeletonShimmer 1.6s ease-in-out infinite",
+                ...shimmerStyle,
               }}
             />
 
             <div
               style={{
                 height: "14px",
-                width: "80%",
-                borderRadius: "4px",
-                background:
-                  "linear-gradient(90deg, #E8DDD3 25%, #F2EDE7 50%, #E8DDD3 75%)",
-                backgroundSize: "200% 100%",
-                animation: "skeletonShimmer 1.6s ease-in-out infinite",
-              }}
-            />
-
-            <div
-              style={{
-                height: "12px",
                 width: "35%",
                 borderRadius: "4px",
-                background:
-                  "linear-gradient(90deg, #E8DDD3 25%, #F2EDE7 50%, #E8DDD3 75%)",
-                backgroundSize: "200% 100%",
-                animation: "skeletonShimmer 1.6s ease-in-out infinite",
+                ...shimmerStyle,
               }}
             />
           </div>
@@ -280,7 +270,7 @@ const ProductsCollection = ({ categorySlug }) => {
         if (cancelled) return;
 
         setProducts(productsData);
-        setCategories(categoriesData.filter((category) => category.isActive));
+        setCategories(categoriesData.filter((category) => category.isActive && category.slug !== "all-products"));
       } catch (err) {
         if (!cancelled) {
           setError(err.message || "Failed to load products.");
@@ -310,7 +300,7 @@ const ProductsCollection = ({ categorySlug }) => {
   const visibleProducts = useMemo(() => {
     let list = [...products];
 
-    if (filters.categories.length > 0) {
+    if (filters.categories.length > 0 && !filters.categories.includes("all-products")) {
       list = list.filter((product) =>
         filters.categories.includes(product.category)
       );

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import hero from "../../assets/heroBanner3.png";
+import hero from "../../assets/heroBanner2.png";
 import { colours, fonts } from "../../theme/theme.js";
 
 const MiniLogo = () => {

@@ -48,7 +48,16 @@ const sendOtp = async (phone_number, country_code = "+91") => {
   console.log(`🔑 [OTP] Generated OTP for ${e164phone}: ${otpCode}`);
 
   // Send via WhatsApp
-  await sendOtpMessage(e164phone, otpCode);
+  try {
+    await sendOtpMessage(e164phone, otpCode);
+  } catch (error) {
+    console.error(`❌ [OTP] Failed to send WhatsApp message:`, error.response?.data || error.message);
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn(`⚠️ [OTP] [DEVELOPMENT FALLBACK] Proceeding despite WhatsApp failure. Your OTP code is: ${otpCode}`);
+    } else {
+      throw error;
+    }
+  }
 
   // Hash OTP code
   const otp_hash = await bcrypt.hash(otpCode, 10);

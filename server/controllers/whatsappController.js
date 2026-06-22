@@ -55,16 +55,10 @@ const updateWhatsappOptIn = async (req, res) => {
 
     if (consent) {
       try {
-        const prompt = `Say hi to ${user.first_name ?? "the user"}`;
-        const welcomeText = await askGemini(prompt);
-
-        await sendWAMessage(
-          user.phone_number,
-          welcomeText,
-        );
+        await wa.sendTemplateMessage(user.phone_number, 'hello_world');
       } catch (messageError) {
         console.error(
-          "[whatsapp-optin] message delivery failed:",
+          "[whatsapp-optin] template delivery failed:",
           messageError.response?.data ?? messageError.message,
         );
       }

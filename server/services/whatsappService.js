@@ -7,7 +7,7 @@ dotenv.config();
 
 const PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID || '1054627024408940';
 
-const sendTemplateMessage = async () => {
+const sendTemplateMessage = async (to, templateName = 'hello_world', languageCode = 'en_US') => {
   const response = await axios({
     url: `https://graph.facebook.com/v25.0/${PHONE_NUMBER_ID}/messages`,
     method: 'POST',
@@ -17,18 +17,19 @@ const sendTemplateMessage = async () => {
     },
     data: JSON.stringify({
       messaging_product: 'whatsapp',
-      to: '917030577234',
+      to,
       type: 'template',
       template: {
-        name: 'hello_world',
+        name: templateName,
         language: {
-          code: 'en_US'
+          code: languageCode
         }
       }
     })
   })
 
   console.log(response.data);
+  return response.data;
 }
 
 const sendTextMessage = async (to, message) => {

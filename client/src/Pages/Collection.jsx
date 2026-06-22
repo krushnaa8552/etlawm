@@ -118,7 +118,7 @@ export default function Collection() {
         setProducts(productsData);
 
         setCategories(
-          categoriesData.filter((category) => category.isActive)
+          categoriesData.filter((category) => category.isActive && category.slug !== "all-products")
         );
       } catch (err) {
         if (!cancelled) {
@@ -149,7 +149,7 @@ export default function Collection() {
   const visibleProducts = useMemo(() => {
     let list = [...products];
 
-    if (filters.categories.length > 0) {
+    if (filters.categories.length > 0 && !filters.categories.includes("all-products")) {
       list = list.filter((product) =>
         filters.categories.includes(product.category)
       );

@@ -93,7 +93,7 @@ export default function AdminProductForm() {
   const finalPrice = Math.max(
     0,
     form.discountType === 'percentage'
-      ? basePrice - (basePrice * discountValue) / 100
+      ? Math.floor(basePrice - (basePrice * discountValue) / 100)
       : basePrice - discountValue
   );
 
@@ -105,7 +105,8 @@ export default function AdminProductForm() {
         const catRes = await fetch(`${API}/api/categories`);
         if (!catRes.ok) throw new Error('Failed to load categories');
         const catData = await catRes.json();
-        setCategories(catData.categories ?? []);
+        const filteredCats = (catData.categories ?? []).filter(cat => cat.slug !== 'all-products');
+        setCategories(filteredCats);
 
         if (isEditMode) {
           const product = await getProductById(id);
