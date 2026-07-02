@@ -15,6 +15,8 @@ import reviewRouter from './routes/reviewRoute.js';
 import orderRouter from './routes/orderRoute.js';
 import whatsappRouter from './routes/whatsappRoute.js';
 import paymentRouter from './routes/paymentRoute.js';
+import ingredientRouter from './routes/ingredientRoute.js';
+
 
 const app = express();
 
@@ -79,6 +81,8 @@ app.use("/api/reviews", reviewRouter);
 app.use("/api/orders", orderRouter);
 app.use("/api/whatsapp", whatsappRouter);
 app.use("/api/payment", paymentRouter);
+app.use("/api/ingredients", ingredientRouter);
+
 
 app.get("/", (req, res) => { res.send("API working") });
 

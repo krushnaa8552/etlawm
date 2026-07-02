@@ -202,27 +202,30 @@ export default function ProductPurchasePanel({
           <button
             type="button"
             onClick={handleAddToCart}
-            disabled={isUnavailable || isAdding}
+            disabled={true}
             className="w-full rounded-md px-7 py-4 text-xs font-bold uppercase tracking-[0.18em] transition-colors"
             style={{
-              backgroundColor: isUnavailable
-                ? colours.border
-                : buttonAdded
-                  ? colours.accent
-                  : colours.text,
-              color: isUnavailable ? colours.mutedText : colours.background,
-              cursor: isUnavailable || isAdding ? "not-allowed" : "pointer",
+              backgroundColor: colours.border,
+              color: colours.mutedText,
+              cursor: "not-allowed",
               fontFamily: fonts.secondary,
             }}
           >
-            {isUnavailable
-              ? "Currently Unavailable"
-              : isAdding
-                ? "Adding..."
-                : buttonAdded
-                  ? "Added to Cart"
-                  : "Add to Cart"}
+            Add to Cart
           </button>
+        </div>
+
+        <div className="mt-4 text-center">
+          <span
+            className="text-xs uppercase tracking-[0.1em]"
+            style={{
+              color: colours.mutedText,
+              fontFamily: fonts.secondary,
+            }}
+          >
+            <div>For Product enquiries or ordering service</div>
+            <div>Contact us at +91 7708234137 or +91 8429121121</div>
+          </span>
         </div>
 
         {cartError && (

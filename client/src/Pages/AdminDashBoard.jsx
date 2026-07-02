@@ -11,7 +11,10 @@ import AdminTopBar from "../Components/AdminPanel/AdminTopBar.jsx";
 import AdminProfile from "../Components/AdminPanel/AdminProfile.jsx";
 import AdminSettings from "../Components/AdminPanel/AdminSettings.jsx";
 import AdminCollectionProducts from "../Components/AdminPanel/AdminCollection/AdminCollectionProducts.jsx";
+import CMSIngredients from "../Components/AdminPanel/AdminContent/CMSIngredients.jsx";
+import CMSIngredientForm from "../Components/AdminPanel/AdminContent/CMSIngredientForm.jsx";
 import { colours, fonts } from "../theme/theme.js";
+
 
 const AdminHome = () => {
   return (
@@ -131,6 +134,10 @@ const AdminDashBoard = () => {
             <Route path="/content/reviews/add-review" element={<CMSReviewForm />} />
             <Route path="/content/reviews/edit/:id" element={<CMSReviewForm />} />
             <Route path="/content/reviews/:slug" element={<ProductReviews />} />
+            <Route path="/content/ingredients" element={<CMSIngredients />} />
+            <Route path="/content/ingredients/add" element={<CMSIngredientForm />} />
+            <Route path="/content/ingredients/edit/:id" element={<CMSIngredientForm />} />
+
 
             {/* Collections Group */}
             <Route path="collection" element={<AdminCollection />} />

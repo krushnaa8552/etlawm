@@ -12,6 +12,14 @@ import {
   getCmsReviewById
 } from '../controllers/reviewController.js';
 import { requireAdmin } from '../middleware/auth.js';
+import {
+  createIngredient,
+  getAdminIngredients,
+  getIngredientById,
+  updateIngredient,
+  deleteIngredient
+} from '../controllers/ingredientController.js';
+
 
 const adminRouter = express.Router();
 
@@ -47,5 +55,12 @@ adminRouter.get("/reviews/product/:slug", getCmsReviewsByProduct);
 adminRouter.get("/reviews/:id", getCmsReviewById);
 adminRouter.patch("/reviews/:id", updateCmsReview);
 adminRouter.delete("/reviews/:id", deleteCmsReview);
+
+adminRouter.get("/ingredients", getAdminIngredients);
+adminRouter.post("/ingredients", createIngredient);
+adminRouter.get("/ingredients/:id", getIngredientById);
+adminRouter.patch("/ingredients/:id", updateIngredient);
+adminRouter.delete("/ingredients/:id", deleteIngredient);
+
 
 export default adminRouter;

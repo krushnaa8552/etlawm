@@ -7,7 +7,23 @@ dotenv.config();
 
 const PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID || '1054627024408940';
 
-const sendTemplateMessage = async (to, templateName = 'hello_world', languageCode = 'en_US') => {
+const sendTemplateMessage = async (to, templateName, languageCode = 'en_US', components = []) => {
+  const data = {
+    messaging_product: 'whatsapp',
+    to,
+    type: 'template',
+    template: {
+      name: templateName,
+      language: {
+        code: languageCode
+      }
+    }
+  };
+
+  if (components && components.length > 0) {
+    data.template.components = components;
+  }
+
   const response = await axios({
     url: `https://graph.facebook.com/v25.0/${PHONE_NUMBER_ID}/messages`,
     method: 'POST',
@@ -15,20 +31,10 @@ const sendTemplateMessage = async (to, templateName = 'hello_world', languageCod
       'Authorization': `Bearer ${process.env.WHATSAPP_TOKEN}`,
       'Content-Type': 'application/json'
     },
-    data: JSON.stringify({
-      messaging_product: 'whatsapp',
-      to,
-      type: 'template',
-      template: {
-        name: templateName,
-        language: {
-          code: languageCode
-        }
-      }
-    })
-  })
+    data: JSON.stringify(data)
+  });
 
-  console.log(response.data);
+  console.log('[whatsappService sendTemplateMessage] Response:', response.data);
   return response.data;
 }
 
@@ -80,7 +86,7 @@ const uploadImage = async () => {
   data.append('messaging_product', 'whatsapp');
   data.append('file', fs.createReadStream(process.cwd() + '/logo.png', { contentType: 'image/png' }));
   data.append('type', 'image/png');
-  
+
   const response = await axios({
     url: `https://graph.facebook.com/v25.0/${PHONE_NUMBER_ID}/media`,
     method: 'POST',
@@ -97,58 +103,50 @@ const sendOtpMessage = async (to, otp) => {
   const url = `https://graph.facebook.com/v25.0/${PHONE_NUMBER_ID}/messages`;
   const templateName = process.env.WA_OTP_TEMPLATE;
 
+  if (!templateName) {
+    throw new Error('[whatsappService sendOtpMessage] Cannot send business-initiated OTP without a configured template (WA_OTP_TEMPLATE is missing in env).');
+  }
+
   const headers = {
     'Authorization': `Bearer ${process.env.WHATSAPP_TOKEN}`,
     'Content-Type': 'application/json'
   };
 
-  let data;
-  if (templateName) {
-    data = {
-      messaging_product: 'whatsapp',
-      to,
-      type: 'template',
-      template: {
-        name: templateName,
-        language: {
-          code: 'en'
+  const data = {
+    messaging_product: 'whatsapp',
+    to,
+    type: 'template',
+    template: {
+      name: templateName,
+      language: {
+        code: 'en'
+      },
+      components: [
+        {
+          type: 'body',
+          parameters: [
+            {
+              type: 'text',
+              text: otp
+            }
+          ]
         },
-        components: [
-          {
-            type: 'body',
-            parameters: [
-              {
-                type: 'text',
-                text: otp
-              }
-            ]
-          },
-          {
-            type: 'button',
-            sub_type: 'url',
-            index: '0',
-            parameters: [
-              {
-                type: 'text',
-                text: otp
-              }
-            ]
-          }
-        ]
-      }
-    };
-  } else {
-    data = {
-      messaging_product: 'whatsapp',
-      to,
-      type: 'text',
-      text: {
-        body: `Your ETLAWM verification code is ${otp}. It is valid for 5 minutes.`
-      }
-    };
-  }
+        {
+          type: 'button',
+          sub_type: 'url',
+          index: '0',
+          parameters: [
+            {
+              type: 'text',
+              text: otp
+            }
+          ]
+        }
+      ]
+    }
+  };
 
-  console.log(`[whatsappService sendOtpMessage] Sending to ${to} via ${templateName ? 'template:' + templateName : 'text'}`);
+  console.log(`[whatsappService sendOtpMessage] Sending to ${to} via template: ${templateName}`);
 
   try {
     const response = await axios({
@@ -161,30 +159,6 @@ const sendOtpMessage = async (to, otp) => {
     return response.data;
   } catch (error) {
     console.error('[whatsappService sendOtpMessage] Error detail:', error.response?.data || error.message);
-    if (templateName) {
-      console.log('[whatsappService sendOtpMessage] Attempting text message fallback...');
-      const fallbackData = {
-        messaging_product: 'whatsapp',
-        to,
-        type: 'text',
-        text: {
-          body: `Your ETLAWM verification code is ${otp}. It is valid for 5 minutes.`
-        }
-      };
-      try {
-        const fallbackResponse = await axios({
-          url,
-          method: 'POST',
-          headers,
-          data: fallbackData
-        });
-        console.log('[whatsappService sendOtpMessage] Fallback Response:', fallbackResponse.data);
-        return fallbackResponse.data;
-      } catch (fallbackError) {
-        console.error('[whatsappService sendOtpMessage] Fallback also failed:', fallbackError.response?.data || fallbackError.message);
-        throw fallbackError;
-      }
-    }
     throw error;
   }
 };
