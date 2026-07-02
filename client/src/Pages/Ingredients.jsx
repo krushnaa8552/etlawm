@@ -3,14 +3,13 @@ import { useScroll, useTransform } from "framer-motion";
 
 import StickyIngredientStage from "../Components/Ingredients/StickyIngredientStage.jsx";
 import NavBar2 from "../Components/NavBar2.jsx";
-import { ingredients as staticIngredients } from "../Components/Ingredients/ingredientsData.js";
 import ProductReveal from "../Components/Ingredients/ProductReveal.jsx";
 import ingredientService from "../services/ingredientService.js";
 import { fonts } from "../theme/theme.js";
 
 const Ingredients = () => {
   const scrollRef = useRef(null);
-  const [ingredientsList, setIngredientsList] = useState(staticIngredients);
+  const [ingredientsList, setIngredientsList] = useState([]);
 
   useEffect(() => {
     const fetchIngredients = async () => {
@@ -30,7 +29,7 @@ const Ingredients = () => {
         }
       } catch (err) {
         console.error(
-          "Failed to load ingredients, using static fallback:",
+          "Failed to load ingredients:",
           err,
         );
       }

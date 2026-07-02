@@ -296,6 +296,52 @@ const cmsIngredients = {
     ),
 };
 
+const productIngredients = {
+  getByProductId: (productId) =>
+    query(
+      `SELECT i.*
+       FROM cms_ingredients i
+       INNER JOIN products_ingredient pi ON pi.ingredient_id = i.id
+       WHERE pi.product_id = $1
+       ORDER BY i.sort_order ASC, i.name ASC`,
+      [productId]
+    ),
+
+  sync: async (productId, ingredientIds) => {
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN");
+
+      // Delete existing relations
+      await client.query(
+        `DELETE FROM products_ingredient
+         WHERE product_id = $1`,
+        [productId]
+      );
+
+      // Insert new relations
+      if (Array.isArray(ingredientIds) && ingredientIds.length > 0) {
+        for (const ingredientId of ingredientIds) {
+          await client.query(
+            `INSERT INTO products_ingredient (product_id, ingredient_id)
+             VALUES ($1, $2)
+             ON CONFLICT DO NOTHING`,
+            [productId, ingredientId]
+          );
+        }
+      }
+
+      await client.query("COMMIT");
+      return true;
+    } catch (err) {
+      await client.query("ROLLBACK");
+      throw err;
+    } finally {
+      client.release();
+    }
+  }
+};
+
 // helper function, just write query( -- sql query -- ) wherever in the code to access the database
 const query = async (text, params = []) => {
     const start = Date.now();
@@ -1389,6 +1435,7 @@ const customerComplaints = {
 const db = {
   cmsReviews,
   cmsIngredients,
+  productIngredients,
   pool,
   query,
   connectPG,

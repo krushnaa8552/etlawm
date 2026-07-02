@@ -1,5 +1,5 @@
 import express from 'express';
-import { upload, uploadImage, addProduct, updateProduct, deleteProduct, addProductImage, setProductImagePrimary, deleteProductImage } from '../controllers/productController.js';
+import { upload, uploadImage, addProduct, updateProduct, deleteProduct, addProductImage, setProductImagePrimary, deleteProductImage, syncProductIngredients } from '../controllers/productController.js';
 import { addCategory, updateCategory, deleteCategory } from '../controllers/categoryController.js';
 import { getAdminProfile, updateAdminProfile, getAdminSettings, updateAdminSettings, makeAdmin, getAdmins, removeAdmin } from '../controllers/adminProfileController.js';
 import {
@@ -42,6 +42,7 @@ adminRouter.delete('/categories/:id', deleteCategory);
 adminRouter.post("/products", addProduct);
 adminRouter.patch("/products/:id", updateProduct);
 adminRouter.delete("/products/:id", deleteProduct);
+adminRouter.post("/products/:id/ingredients", syncProductIngredients);
 
 //see here this api call
 adminRouter.post("/upload", upload.single("image"), uploadImage);
